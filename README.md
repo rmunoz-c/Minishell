@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # 🐚 Minishell
 
 Welcome to Minishell, a simplified recreation of a Linux shell! This project, developed at 42 Madrid, is designed to provide hands-on experience with process management, file descriptors, and fundamental shell functionalities.
