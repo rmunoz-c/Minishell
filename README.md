@@ -63,5 +63,5 @@ Minishell functions similarly to Bash but with a limited scope. It handles user 
 - 🔧  **Compiler**: gcc (GCC 9+ recommended).
 - 🔗  **Make**: Required for build automation.
 - 📚  **Readline library**: For command history and interactive input (optional but highly recommended).
-- - **On Ubuntu/Debian**: `sudo apt-get install libreadline-dev`
+	- **On Ubuntu/Debian**: `sudo apt-get install libreadline-dev`
 - 📂  **libft**: Auxiliary library (if allowed by the Norm and project rules; included in the `libft/` folder with its own Makefile).
