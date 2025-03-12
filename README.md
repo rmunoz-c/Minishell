@@ -14,39 +14,10 @@ Welcome to Minishell, a simplified recreation of a Linux shell! This project, de
 
 
 # 📖 About the Project<a name="id1"></a>
-=======
-🐚 Minishell
-
-Welcome to Minishell, a simplified recreation of a Linux shell! This project, developed at 42 Madrid, is designed to provide hands-on experience with process management, file descriptors, and fundamental shell functionalities.
-
-📜 Table of Contents
-
-📖 About the Project
-
-💡 Problem Statement
-
-⚙️ How It Works
-
-🚀 Features
-
-🛠 Installation & Usage
-
-🤝 Contributing
-
-📄 License
-
-📖 About the Project
->>>>>>> 20d0b829c657eb9dd6aaae7a1226be450d94b4c3
 
 Minishell is a project aimed at building a minimalistic shell, mimicking essential features of Bash. It provides an opportunity to delve into UNIX process management, system calls, and the intricate workings of a shell.
 
 This project is part of the curriculum at 42 Madrid and follows strict guidelines to encourage low-level programming skills, error handling, and robust software development practices.
-
-<<<<<<< HEAD
-# 💡 Problem Statement<a name="id2"></a>
-=======
-💡 Problem Statement
->>>>>>> 20d0b829c657eb9dd6aaae7a1226be450d94b4c3
 
 Shells are the backbone of UNIX-like operating systems, acting as an interface between users and the system. Understanding how a shell works at a fundamental level is crucial for system programming, security, and performance optimization.
 
@@ -60,15 +31,11 @@ Signal handling and built-in command execution.
 
 Implementing pipelines and environment variable management.
 
-<<<<<<< HEAD
 # ⚙️ How It Works<a name="id3"></a>
-=======
-⚙️ How It Works
->>>>>>> 20d0b829c657eb9dd6aaae7a1226be450d94b4c3
 
 Minishell functions similarly to Bash but with a limited scope. It handles user input, parses commands, executes built-in functions, and manages processes effectively. Key elements include:
 
-Lexing & Parsing: User input is tokenized and structured into commands.
+**Lexing & Parsing**: User input is tokenized and structured into commands.
 
 Execution: The shell handles both built-in commands and external programs.
 
@@ -78,13 +45,11 @@ Signal Handling: Properly managing signals like Ctrl+C, Ctrl+D, and Ctrl+Z.
 
 Environment Handling: Managing $PATH, custom variables, and command execution.
 
-<<<<<<< HEAD
 # 🚀 Features<a name="id4"></a>
 
-✅ Basic command execution (like ls, echo, cat).✅ Built-in commands (cd, pwd, export, unset, env, exit).✅ Redirections (>, >>, <).✅ Pipes (|).✅ Signal handling (Ctrl+C, Ctrl+D, Ctrl+Z).✅ Environment variable management.
-=======
-🚀 Features
-
-✅ Basic command execution (like ls, echo, cat).✅ Built-in commands (cd, pwd, export, unset, env, exit).✅ Redirections (>, >>, <).✅ Pipes (|).✅ Signal handling (Ctrl+C, Ctrl+D, Ctrl+Z).✅ Environment variable management.
-
->>>>>>> 20d0b829c657eb9dd6aaae7a1226be450d94b4c3
+- ✅ Basic command execution (like ls, echo, cat).
+- ✅ Built-in commands (cd, pwd, export, unset, env, exit).
+- ✅ Redirections (>, >>, <).
+- ✅ Pipes (|).
+- ✅ Signal handling (Ctrl+C, Ctrl+D, Ctrl+Z).
+- ✅ Environment variable management.
