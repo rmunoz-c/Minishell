@@ -57,7 +57,7 @@ Minishell functions similarly to Bash but with a limited scope. It handles user 
 - ✅ Signal handling (`Ctrl+C`, `Ctrl+D`, `Ctrl+Z`).
 - ✅ Environment variable management.
 
-## 🛠 Requirements
+## 🛠 Requirements<a name="id5"></a>
 
 - 🛠️  **Operating System**: Linux or macOS.
 - 🔧  **Compiler**: gcc (GCC 9+ recommended).
