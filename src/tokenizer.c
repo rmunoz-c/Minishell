@@ -10,12 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-<<<<<<< HEAD
 #include "../includes/minishell.h"
-=======
-#include "../includes/expander.h"
-#include "../includes/tokenizer.h"
->>>>>>> 789d6fb5db893a411c49f0c5dbe4b7f7a84649b0
 
 static int	expand_tokens(t_token ***tokens, size_t *capacity)
 {
@@ -59,13 +54,9 @@ int	add_token(t_token ***tokens, size_t *token_count, t_token_type type,
 		const char *value)
 {
 	static size_t	capacity = 8;
-<<<<<<< HEAD
 	
 	if (!value || *value == '\0')
 		return (0);
-=======
-
->>>>>>> 789d6fb5db893a411c49f0c5dbe4b7f7a84649b0
 	if (*token_count >= capacity)
 		if (!expand_tokens(tokens, &capacity))
 			return (0);
@@ -89,14 +80,10 @@ t_token	**tokenize(const char *str, size_t *token_count)
 	while (str[i])
 	{
 		if (isspace(str[i]))
-<<<<<<< HEAD
 		{
 			i++;
 			continue;
 		}
-=======
-			i++;
->>>>>>> 789d6fb5db893a411c49f0c5dbe4b7f7a84649b0
 		else if (is_special_char(str[i]))
 			i += handle_special_char(str[i], tokens, token_count);
 		else if (is_quote(str[i]))
