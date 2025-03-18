@@ -6,7 +6,11 @@ LIBFT = $(LIBFT_DIR)/libft.a
 CC= cc
 CFLAGS= -Wall -Werror -Wextra -g
 
-SRC=
+SRC=	src/expander.c \
+		src/free.c \
+		src/tokenizer_utils.c \
+		src/tokenizer.c \
+		src/test_tokenizer.c \
 
 OBJ= $(SRC:.c=.o) 
 
