@@ -42,9 +42,12 @@ typedef struct s_token
 
 extern int			g_last_exit_status;
 
+<<<<<<< HEAD
 # include "expander.h"
 # include "tokenizer.h"
 
+=======
+>>>>>>> 789d6fb5db893a411c49f0c5dbe4b7f7a84649b0
 void				free_tokens(t_token **tokens, size_t token_count);
 
 #endif
