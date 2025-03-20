@@ -49,24 +49,18 @@ char	*expand_dollar(const char *str, size_t *pos)
 	size_t	start;
 	size_t	var_len;
 
-	// Saltas el '$'
 	(*pos)++;
-	// Si es '$?', expandes exit status y avanzas uno más.
 	if (str[*pos] == '?')
 	{
 		(*pos)++;
 		return (expand_exit_status());
 	}
-	// Guardas posición inicial del nombre de variable
 	start = *pos;
 	while (str[*pos] && ft_isalnum(str[*pos]))
 		(*pos)++;
-	// Cantidad de chars del nombre
 	var_len = *pos - start;
-	// Si no había nada (ej. '$ hola'), expandes a ""
 	if (var_len == 0)
 		return (ft_strdup(""));
-	// Copias solo el nombre sin '$'
 	expanded = expand_variable(ft_substr(str, start, var_len));
 	return (expanded);
 }
@@ -143,7 +137,7 @@ size_t	handle_quote(const char *str, t_token **tokens, size_t *token_count,
 	if (!quoted_str)
 		return (len);
 	if (quote == '"')
-		expanded_str = expand_variable(quoted_str);
+		expanded_str = expand_inside_string(quoted_str);
 	else
 		expanded_str = ft_strdup(quoted_str);
 	if (expanded_str && *expanded_str)

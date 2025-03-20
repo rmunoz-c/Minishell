@@ -7,7 +7,7 @@ int	main(void)
 	size_t	i;
 	char	*input;
 
-	input = "echo hola$USER que tal estas?";
+	input = "echo hola \"USER\" que tal estas?";
 	tokens = tokenize(input, &token_count);
 	if (!tokens)
 		return (printf("Error en el tokenizador\n"), 1);

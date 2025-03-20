@@ -68,3 +68,38 @@ char	*build_expanded_word(const char *str, size_t *pos)
 	}
 	return (result);
 }
+
+char	*build_inside_string(const char *substr)
+{
+	size_t	pos;
+	char	*result;
+	char	*temp;
+
+	pos = 0;
+	result = ft_strdup("");
+	if (!result)
+		return (NULL);
+	while (substr[pos])
+	{
+		if (substr[pos] == '$' && substr[pos + 1])
+		{
+			temp = expand_dollar(substr, &pos);
+		}
+		else
+		{
+			temp = ft_substr(substr, pos, 1);
+			pos++;
+		}
+		result = ft_strjoinfree(result, temp);
+		free(temp);
+		if (!result)
+			return (NULL);
+	}
+	return (result);
+}
+
+char	*expand_inside_string(const char *substr)
+{
+	return (build_inside_string(substr));
+}
+

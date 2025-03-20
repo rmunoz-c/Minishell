@@ -28,5 +28,7 @@ size_t	handle_quote(const char *str, t_token **tokens, size_t *token_count,
 			char quote);
 
 char	*build_expanded_word(const char *str, size_t *pos);
+char	*build_inside_string(const char *substr);
+char	*expand_inside_string(const char *substr);
 
 #endif
