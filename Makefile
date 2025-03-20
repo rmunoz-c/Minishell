@@ -9,6 +9,7 @@ CFLAGS= -Wall -Werror -Wextra -g
 SRC=	src/expander.c \
 		src/free.c \
 		src/tokenizer_utils.c \
+		src/tokenizer_utils2.c \
 		src/tokenizer.c \
 		src/test_tokenizer.c \
 

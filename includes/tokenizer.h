@@ -15,15 +15,18 @@
 
 # include "minishell.h"
 
+size_t	handle_special_char(char c, t_token **tokens, size_t *token_count);
 t_token	**tokenize(const char *str, size_t *token_count);
 int		add_token(t_token ***tokens, size_t *token_count, t_token_type type,
 			const char *value);
 
 int		is_special_char(char c);
 int		is_quote(char c);
-size_t	handle_special_char(char c, t_token **tokens, size_t *token_count);
+char	*expand_dollar(const char *str, size_t *pos);
 size_t	handle_word(const char *str, t_token **tokens, size_t *token_count);
 size_t	handle_quote(const char *str, t_token **tokens, size_t *token_count,
 			char quote);
+
+char	*build_expanded_word(const char *str, size_t *pos);
 
 #endif

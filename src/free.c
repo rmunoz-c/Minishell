@@ -6,7 +6,7 @@
 /*   By: enogueir <enogueir@student.42madrid>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 19:52:30 by enogueir          #+#    #+#             */
-/*   Updated: 2025/03/13 19:53:30 by enogueir         ###   ########.fr       */
+/*   Updated: 2025/03/19 09:54:27 by enogueir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ void	free_tokens(t_token **tokens, size_t token_count)
 	i = 0;
 	while (i < token_count)
 	{
-		if (tokens[i])
+		if (tokens[i] && tokens[i]->value)
 		{
 			free(tokens[i]->value);
 			free(tokens[i]);

@@ -6,7 +6,7 @@
 /*   By: enogueir <enogueir@student.42madrid>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 19:50:24 by enogueir          #+#    #+#             */
-/*   Updated: 2025/03/13 19:51:05 by enogueir         ###   ########.fr       */
+/*   Updated: 2025/03/19 10:18:52 by enogueir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,10 +33,18 @@ char	*expand_variable(const char *var)
 		return (expanded);
 	}
 	expanded = ft_strdup(value);
+	if (!expanded)
+		return (NULL);
 	return (expanded);
 }
 
+
 char	*expand_exit_status(void)
 {
-	return (ft_itoa(g_last_exit_status));
+	char	*exit_status;
+
+	exit_status = ft_itoa(g_last_exit_status);
+	if (!exit_status)
+		return (NULL);
+	return (exit_status);
 }
