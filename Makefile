@@ -1,24 +1,32 @@
-NAME= minishell
+NAME := minishell
 
-LIBFT_DIR= libft
-LIBFT = $(LIBFT_DIR)/libft.a
+LIBFT_DIR := libft
+LIBFT := $(LIBFT_DIR)/libft.a
 
 CC= cc
-CFLAGS= -Wall -Werror -Wextra -g
+CFLAGS	:= -Wall -Werror -Wextra -g 
+IFLAGS	:= -Iincludes/minishell.h -Ilibft/libft.h
+LFLAGS	:= -Llibft/ -lft -lreadline
 
-SRC=	src/expander.c \
+SRC :=	src/expander.c \
 		src/free.c \
 		src/tokenizer_utils.c \
 		src/tokenizer_utils2.c \
 		src/tokenizer.c \
 		src/test_tokenizer.c \
 
-OBJ= $(SRC:.c=.o) 
+OBJ := $(SRC:.c=.o) 
 
 all: $(NAME)
 
-$(NAME): $(LIBFT) $(OBJ) $(MLX_LIBPATH)
-	$(CC) $(OBJ) $(LIBFT) -o $(NAME) $(CFLAGS)
+# $(NAME): $(LIBFT) $(OBJ)
+# 	$(CC) $(CFLAGS) $(IFLAGS) $^ $(LFLAGS)-o $(NAME)
+
+# %.o: %.c
+# 	$(CC) $(CFLAGS) -o $@ $< -c
+
+$(NAME): $(LIBFT) $(OBJ)
+	$(CC) $(OBJ) $(LIBFT) $(LFLAGS) -o $(NAME) $(CFLAGS)
 
 %.o: %.c minishell.h
 	$(CC) $(CFLAGS) -o $@ $< -c
