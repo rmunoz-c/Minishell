@@ -6,13 +6,13 @@
 /*   By: enogueir <enogueir@student.42madrid>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 19:50:24 by enogueir          #+#    #+#             */
-/*   Updated: 2025/03/19 10:18:52 by enogueir         ###   ########.fr       */
+/*   Updated: 2025/03/27 19:18:39 by enogueir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
 
-int	g_last_exit_status = 0;
+int		g_last_exit_status = 0;
 
 char	*expand_variable(const char *var)
 {
@@ -37,7 +37,6 @@ char	*expand_variable(const char *var)
 		return (NULL);
 	return (expanded);
 }
-
 
 char	*expand_exit_status(void)
 {

@@ -14,6 +14,7 @@ SRC :=	src/expander.c \
 		src/tokenizer_utils2.c \
 		src/tokenizer.c \
 		src/test_tokenizer.c \
+		src/token_list.c \
 
 OBJ := $(SRC:.c=.o) 
 

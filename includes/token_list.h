@@ -1,27 +1,29 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   free.c                                             :+:      :+:    :+:   */
+/*   token_list.h                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: enogueir <enogueir@student.42madrid>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/03/13 19:52:30 by enogueir          #+#    #+#             */
-/*   Updated: 2025/03/27 19:35:09 by enogueir         ###   ########.fr       */
+/*   Created: 2025/03/27 19:03:11 by enogueir          #+#    #+#             */
+/*   Updated: 2025/03/27 19:28:31 by enogueir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/minishell.h"
+#ifndef TOKEN_LIST_H
+# define TOKEN_LIST_H
 
-void free_tokens(t_token *tokens, size_t count)
+# include "minishell.h"
+
+typedef struct s_token_list
 {
-	size_t i;
+	t_token	*array;
+	size_t	size;
+	size_t	capacity;
+}	t_token_list;
 
-	i = 0;
-	while (i < count)
-	{
-		free(tokens[i].value);
-		i++;
-	}
-	free(tokens);
-}
+void	token_list_init(t_token_list *list);
+void	token_list_free(t_token_list *list);
+int		token_list_add(t_token_list *list, t_token_type type, const char *val);
 
+#endif

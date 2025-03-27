@@ -3,14 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   tokenizer_utils2.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rmunoz-c <rmunoz-c@student.42madrid.com>   #+#  +:+       +#+        */
+/*   By: enogueir <enogueir@student.42madrid>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025-03-19 18:30:17 by rmunoz-c          #+#    #+#             */
-/*   Updated: 2025-03-19 18:30:17 by rmunoz-c         ###   ########.fr       */
+/*   Created: 2025/03/19 18:30:17 by rmunoz-c          #+#    #+#             */
+/*   Updated: 2025/03/27 20:20:33 by enogueir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/minishell.h"
+#include "../includes/tokenizer.h"
+#include "../libft/libft.h"
 
 static int	append_char_to_result(char c, char **result)
 {
@@ -27,7 +28,7 @@ static int	append_char_to_result(char c, char **result)
 	return (1);
 }
 
-static int	expand_and_join(const char *str, size_t *pos, char **result)
+int	expand_and_join(const char *str, size_t *pos, char **result)
 {
 	char	*temp;
 	char	*expanded;
@@ -43,7 +44,6 @@ static int	expand_and_join(const char *str, size_t *pos, char **result)
 	*result = temp;
 	return (1);
 }
-
 
 char	*build_expanded_word(const char *str, size_t *pos)
 {
@@ -82,9 +82,7 @@ char	*build_inside_string(const char *substr)
 	while (substr[pos])
 	{
 		if (substr[pos] == '$' && substr[pos + 1])
-		{
 			temp = expand_dollar(substr, &pos);
-		}
 		else
 		{
 			temp = ft_substr(substr, pos, 1);
@@ -102,4 +100,3 @@ char	*expand_inside_string(const char *substr)
 {
 	return (build_inside_string(substr));
 }
-

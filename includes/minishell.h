@@ -6,7 +6,7 @@
 /*   By: enogueir <enogueir@student.42madrid>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/05 18:08:26 by rmunoz-c          #+#    #+#             */
-/*   Updated: 2025/03/26 15:46:44 by enogueir         ###   ########.fr       */
+/*   Updated: 2025/03/27 19:39:08 by enogueir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,9 +42,6 @@ typedef struct s_token
 
 extern int			g_last_exit_status;
 
-# include "expander.h"
-# include "tokenizer.h"
-
-void				free_tokens(t_token **tokens, size_t token_count);
+void free_tokens(t_token *tokens, size_t count);
 
 #endif
