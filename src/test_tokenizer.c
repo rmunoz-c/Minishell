@@ -6,24 +6,25 @@
 /*   By: enogueir <enogueir@student.42madrid>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/27 19:18:59 by enogueir          #+#    #+#             */
-/*   Updated: 2025/03/27 20:31:01 by enogueir         ###   ########.fr       */
+/*   Updated: 2025/04/03 18:49:26 by enogueir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/tokenizer.h"
-#include "../includes/minishell.h"
-#include "../includes/expander.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include <readline/history.h>
 #include <readline/readline.h>
+#include <readline/history.h>
+#include "../includes/minishell.h"
+#include "../includes/token_list.h"
+#include "../includes/tokenizer.h"
+#include "../includes/expander.h"
+#include "../libft/libft.h"
 
-int	main(void)
+int main(void)
 {
-	t_token	*tokens;
-	size_t	token_count;
-	size_t	i;
-	char	*input;
+	t_token_list list;
+	char         *input;
+	size_t       i;
 
 	while (1)
 	{
@@ -31,21 +32,19 @@ int	main(void)
 		if (!input)
 			break;
 		add_history(input);
-		tokens = tokenize(input, &token_count);
-		if (!tokens)
-		{
-			printf("Error en el tokenizador\n");
-			free(input);
-			continue;
-		}
+		token_list_init(&list);
+		tokenize_input(input, &list);
+		expand_token_list(&list);
 		i = 0;
-		while (i < token_count && tokens[i].type != TOKEN_EOF)
+		while (i < list.size && list.array[i].type != TOKEN_EOF)
 		{
 			printf("Token [%s], Tipo: %d, Longitud: %zu\n",
-				tokens[i].value, tokens[i].type, tokens[i].length);
+				list.array[i].value,
+				list.array[i].type,
+				list.array[i].length);
 			i++;
 		}
-		free_tokens(tokens, token_count);
+		token_list_free(&list);
 		free(input);
 	}
 	return (0);

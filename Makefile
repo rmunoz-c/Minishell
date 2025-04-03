@@ -3,52 +3,63 @@ NAME := minishell
 LIBFT_DIR := libft
 LIBFT := $(LIBFT_DIR)/libft.a
 
-CC= cc
-CFLAGS	:= -Wall -Werror -Wextra -g 
-IFLAGS	:= -Iincludes/minishell.h -Ilibft/libft.h
-LFLAGS	:= -Llibft/ -lft -lreadline
+CC = cc
+CFLAGS := -Wall -Werror -Wextra -g 
+IFLAGS := -Iincludes -Ilibft
+LFLAGS := -Llibft -lft -lreadline
 
-SRC :=	src/expander.c \
+SRC :=	src/expander/expander_build.c \
+		src/expander/expander_utils.c \
+		src/expander/expander.c \
+		src/tokenizer/quote_handler.c \
+		src/tokenizer/tokenizer_utils.c \
+		src/tokenizer/tokenizer.c \
 		src/free.c \
-		src/tokenizer_utils.c \
-		src/tokenizer_utils2.c \
-		src/tokenizer.c \
 		src/test_tokenizer.c \
 		src/token_list.c \
 
-OBJ := $(SRC:.c=.o) 
+OBJ := $(SRC:.c=.o)
+
+# Colores ANSI
+BLUE := \033[34m
+GREEN := \033[32m
+YELLOW := \033[33m
+CYAN := \033[36m
+RESET := \033[0m
 
 all: $(NAME)
-
-# $(NAME): $(LIBFT) $(OBJ)
-# 	$(CC) $(CFLAGS) $(IFLAGS) $^ $(LFLAGS)-o $(NAME)
-
-# %.o: %.c
-# 	$(CC) $(CFLAGS) -o $@ $< -c
+	@printf "$(GREEN)\n✅ Compilación completa$(RESET)\n"
 
 $(NAME): $(LIBFT) $(OBJ)
-	$(CC) $(OBJ) $(LIBFT) $(LFLAGS) -o $(NAME) $(CFLAGS)
+	@printf "$(CYAN)\r🔗 Enlazando: $(NAME)                     $(RESET)"
+	@$(CC) $(OBJ) $(LIBFT) $(LFLAGS) -o $(NAME) $(CFLAGS)
 
-%.o: %.c minishell.h
-	$(CC) $(CFLAGS) -o $@ $< -c
+%.o: %.c
+	@printf "$(BLUE)\r⚙️  Compilando: $<                         $(RESET)"
+	@$(CC) $(CFLAGS) $(IFLAGS) -o $@ -c $<
 
 $(LIBFT):
-	$(MAKE) -sC $(LIBFT_DIR)
+	@$(MAKE) -sC $(LIBFT_DIR)
 
 clean:
-	rm -f $(OBJ)
-	$(MAKE) fclean -C $(LIBFT_DIR)
+	@printf "$(YELLOW)\r🧹 Limpiando objetos...                $(RESET)\n"
+	@rm -f $(OBJ)
+	@printf "$(GREEN)\r🧹  Limpiando LIBFT.                    $(RESET)\n"
+	@$(MAKE) -sC $(LIBFT_DIR) fclean
 
 fclean: clean
-	rm -f $(NAME)
+	@printf "$(YELLOW)\r🗑️  Borrando ejecutable...              $(RESET)\n"
+	@rm -f $(NAME)
+	@printf "$(GREEN)\r✅  Limpieza completa.                  $(RESET)\n"
 
 re: fclean all
 
 norm: 	
-	@norminette include
+	@printf "$(YELLOW)\n🔍 Revisando con norminette...$(RESET)\n"
+	@norminette includes
 	@norminette libft
 	@norminette $(SRC)
 
-.DEFAULT_GOAL: all
+.DEFAULT_GOAL := all
 
-.PHONY: all clean fclean re
+.PHONY: all clean fclean re norm
