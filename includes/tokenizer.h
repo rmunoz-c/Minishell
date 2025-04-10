@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   tokenizer.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: enogueir <enogueir@student.42madrid>       +#+  +:+       +#+        */
+/*   By: enogueir <enogueir@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 19:04:04 by enogueir          #+#    #+#             */
-/*   Updated: 2025/04/03 18:22:56 by enogueir         ###   ########.fr       */
+/*   Updated: 2025/04/10 16:59:15 by enogueir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@ size_t	handle_quote_token(const char *str, t_token_list *list, size_t start);
 int		is_special_char(char c);
 int		is_quote(char c);
 int		is_whitespace(char c);
+size_t	handle_dollar_quote_token(const char *str, t_token_list *list, size_t index);
 
 /*tokenizer.c*/
 size_t	handle_quote(const char *str, t_token_list *list, size_t start);

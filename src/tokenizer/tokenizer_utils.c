@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   tokenizer_utils.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: enogueir <enogueir@student.42madrid>       +#+  +:+       +#+        */
+/*   By: enogueir <enogueir@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 19:32:13 by enogueir          #+#    #+#             */
-/*   Updated: 2025/04/03 17:39:54 by enogueir         ###   ########.fr       */
+/*   Updated: 2025/04/10 16:59:07 by enogueir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,4 +31,31 @@ int	is_whitespace(char c)
 {
 	return (c == ' ' || c == '\t' || c == '\n' || c == '\v' || c == '\f'
 		|| c == '\r');
+}
+
+size_t	handle_dollar_quote_token(const char *str, t_token_list *list, size_t index)
+{
+	char	quote;
+	size_t	start;
+	size_t	end;
+	char	*inner;
+
+	quote = str[index + 1];
+	index += 2;
+	start = index;
+	while (str[index] && str[index] != quote)
+		index++;
+	if (!str[index])
+	{
+		token_list_add(list, TOKEN_ERROR, "Unclosed quote after $");
+		return (index - (start - 2));
+	}
+	end = index;
+	index++;
+	inner = ft_substr(str, start, end - start);
+	if (!inner)
+		return (end - (start - 2));
+	token_list_add(list, TOKEN_WORD, inner);
+	free(inner);
+	return (index - (start - 2));
 }

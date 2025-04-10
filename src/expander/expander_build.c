@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   expander_build.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: enogueir <enogueir@student.42madrid>       +#+  +:+       +#+        */
+/*   By: enogueir <enogueir@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/03 17:29:18 by enogueir          #+#    #+#             */
-/*   Updated: 2025/04/03 18:26:35 by enogueir         ###   ########.fr       */
+/*   Updated: 2025/04/10 16:52:40 by enogueir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,28 +15,33 @@
 #include "../../includes/tokenizer.h"
 #include "../../libft/libft.h"
 
-int	handle_dollar_quote(const char *str, size_t *pos, char **res)
+size_t handle_dollar_quote(const char *str, t_token_list *list, size_t i)
 {
-	char	*temp;
-	size_t	start;
-	char	quote;
+	char  quote;
+	size_t start;
+	size_t end;
+	char  *inner;
 
-	quote = str[*pos];
-	(*pos)++;
-	start = *pos;
-	while (str[*pos] && str[*pos] != quote)
-		(*pos)++;
-	temp = ft_substr(str, start, *pos - start);
-	if (!temp)
-		return (0);
-	*res = ft_strjoinfree(*res, temp);
-	free(temp);
-	if (!(*res))
-		return (0);
-	if (str[*pos] == quote)
-		(*pos)++;
-	return (1);
+	quote = str[i + 1];
+	i += 2;
+	start = i;
+	while (str[i] && str[i] != quote)
+		i++;
+	if (!str[i])
+	{
+		token_list_add(list, TOKEN_ERROR, "Unclosed quote after $");
+		return (i - (start - 2));
+	}
+	end = i;
+	i++;
+	inner = ft_substr(str, start, end - start);
+	if (!inner)
+		return (end - (start - 2));
+	token_list_add(list, TOKEN_WORD, inner);
+	free(inner);
+	return (i - (start - 2));
 }
+
 
 char	*build_expanded_word(const char *str, size_t *pos)
 {

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   tokenizer.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: enogueir <enogueir@student.42madrid>       +#+  +:+       +#+        */
+/*   By: enogueir <enogueir@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 19:07:35 by enogueir          #+#    #+#             */
-/*   Updated: 2025/04/03 18:46:11 by enogueir         ###   ########.fr       */
+/*   Updated: 2025/04/10 18:55:55 by enogueir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,14 +34,24 @@ size_t	handle_quote(const char *str, t_token_list *list, size_t start)
 	return (len - start + 1);
 }
 
-size_t	handle_special_char(char c, t_token_list *list)
+size_t	handle_special_char(const char *str, t_token_list *list, size_t i)
 {
-	if (c == '|')
-		token_list_add(list, TOKEN_PIPE, "|");
-	else if (c == '>')
-		token_list_add(list, TOKEN_REDIRECT_OUT, ">");
-	else if (c == '<')
-		token_list_add(list, TOKEN_REDIRECT_IN, "<");
+	if (str[i] == '>')
+	{
+		if (str[i + 1] == '>')
+			return (token_list_add(list, TOKEN_REDIRECT_OUT_DBL, ">>"), 2);
+		else
+			return (token_list_add(list, TOKEN_REDIRECT_OUT, ">"), 1);
+	}
+	else if (str[i] == '<')
+	{
+		if (str[i + 1] == '<')
+			return (token_list_add(list, TOKEN_REDIRECT_IN_DBL, "<<"), 2);
+		else
+			return (token_list_add(list, TOKEN_REDIRECT_IN, "<"), 1);
+	}
+	else if (str[i] == '|')
+		return (token_list_add(list, TOKEN_PIPE, "|"), 1);
 	return (1);
 }
 
@@ -67,10 +77,12 @@ void	tokenize_input(const char *str, t_token_list *list)
 	{
 		if (isspace(str[i]))
 			i++;
+		else if (str[i] == '$' && (str[i + 1] == '"' || str[i + 1] == '\''))
+			i += handle_dollar_quote_token(str, list, i);
 		else if (is_quote(str[i]))
 			i += handle_quote(str, list, i);
 		else if (str[i] == '|' || str[i] == '<' || str[i] == '>')
-			i += handle_special_char(str[i], list);
+			i += handle_special_char(str, list, i);
 		else
 			handle_word(str, list, &i);
 	}

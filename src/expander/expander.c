@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   expander.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: enogueir <enogueir@student.42madrid>       +#+  +:+       +#+        */
+/*   By: enogueir <enogueir@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 19:50:24 by enogueir          #+#    #+#             */
-/*   Updated: 2025/04/03 18:45:35 by enogueir         ###   ########.fr       */
+/*   Updated: 2025/04/10 16:36:44 by enogueir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,11 +25,11 @@ char	*get_env_value(const char *name)
 	return (ft_strdup(value));
 }
 
-char	*expand_dollar(const char *str, size_t *i)
+char *expand_dollar(const char *str, size_t *i)
 {
-	size_t	start;
-	char	*var;
-	char	*val;
+	size_t start;
+	char  *var;
+	char  *val;
 
 	(*i)++;
 	if (str[*i] == '?')
@@ -37,14 +37,19 @@ char	*expand_dollar(const char *str, size_t *i)
 		(*i)++;
 		return (ft_itoa(g_exit_status));
 	}
+	if (str[*i] == '\'' || str[*i] == '"')
+		return (ft_strdup("$"));
 	start = *i;
 	while (str[*i] && (ft_isalnum(str[*i]) || str[*i] == '_'))
 		(*i)++;
+	if (*i == start)
+		return (ft_strdup("$"));
 	var = ft_substr(str, start, *i - start);
 	val = get_env_value(var);
 	free(var);
 	return (val);
 }
+
 
 char	*expand_string(const char *str)
 {

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   expander.h                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: enogueir <enogueir@student.42madrid>       +#+  +:+       +#+        */
+/*   By: enogueir <enogueir@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 19:04:39 by enogueir          #+#    #+#             */
-/*   Updated: 2025/04/03 18:29:55 by enogueir         ###   ########.fr       */
+/*   Updated: 2025/04/10 16:55:06 by enogueir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,6 @@
 # include "token_list.h"
 
 /*expander_build.c*/
-int		handle_dollar_quote(const char *str, size_t *pos, char **res);
 char	*build_expanded_word(const char *str, size_t *pos);
 
 /*expander_utils.c*/
