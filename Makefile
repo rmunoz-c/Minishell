@@ -7,14 +7,21 @@ LIBFT := $(LIBFT_DIR)/libft.a
 
 # Compilador y flags
 CC = cc
-CFLAGS := -Wall -Werror -Wextra -g 
+CFLAGS := -Wall -Werror -Wextra -g -MMD -MP
 IFLAGS := -Iincludes -Ilibft
 LFLAGS := -Llibft -lft -lreadline
 
 # Rutas de fuentes y objetos
-SRC :=	src/expander/expander_build.c \
+SRC :=	src/ast/ast_utils.c \
+		src/ast/ast.c \
+		src/exec/heredoc.c \
+		src/expander/expander_build.c \
 		src/expander/expander_utils.c \
 		src/expander/expander.c \
+		src/parser/parse_args.c \
+		src/parser/parse_command.c \
+		src/parser/parse_input.c \
+		src/parser/parse_utils.c \
 		src/tokenizer/quote_handler.c \
 		src/tokenizer/tokenizer_utils.c \
 		src/tokenizer/tokenizer.c \
@@ -22,10 +29,10 @@ SRC :=	src/expander/expander_build.c \
 		src/test_tokenizer.c \
 		src/token_list.c \
 
-# Directorio para los objetos
 BUILD_DIR := build
 OBJ := $(SRC:.c=.o)
 OBJ := $(addprefix $(BUILD_DIR)/, $(OBJ))
+DEP := $(OBJ:.o=.d)
 
 # Colores ANSI
 BLUE := \033[34m
@@ -72,5 +79,8 @@ norm:
 	@norminette includes
 	@norminette libft
 	@norminette $(SRC)
+
+# Incluir dependencias automáticas
+-include $(DEP)
 
 .PHONY: all clean fclean re norm run

@@ -6,7 +6,7 @@
 /*   By: enogueir <enogueir@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/10 18:35:09 by enogueir          #+#    #+#             */
-/*   Updated: 2025/04/10 18:35:44 by enogueir         ###   ########.fr       */
+/*   Updated: 2025/04/11 19:38:29 by enogueir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,7 +84,7 @@ static int fill_args(t_token_list *list, size_t start, size_t end, char **args)
 	return 1;
 }
 
-static char **collect_args(t_token_list *list, size_t start, size_t end)
+char **collect_args(t_token_list *list, size_t start, size_t end)
 {
 	char **args;
 	int ok;

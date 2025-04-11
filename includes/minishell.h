@@ -6,7 +6,7 @@
 /*   By: enogueir <enogueir@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/05 18:08:26 by rmunoz-c          #+#    #+#             */
-/*   Updated: 2025/04/10 18:40:35 by enogueir         ###   ########.fr       */
+/*   Updated: 2025/04/11 19:37:37 by enogueir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,8 @@
 # include <stdlib.h>
 # include <string.h>
 # include <unistd.h>
+#include <readline/readline.h>
+#include <readline/history.h>
 
 typedef enum e_token_type
 {

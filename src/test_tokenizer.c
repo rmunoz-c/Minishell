@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   test_tokenizer.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: enogueir <enogueir@student.42madrid>       +#+  +:+       +#+        */
+/*   By: enogueir <enogueir@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/27 19:18:59 by enogueir          #+#    #+#             */
-/*   Updated: 2025/04/03 18:49:26 by enogueir         ###   ########.fr       */
+/*   Updated: 2025/04/11 20:00:07 by enogueir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,34 +18,75 @@
 #include "../includes/token_list.h"
 #include "../includes/tokenizer.h"
 #include "../includes/expander.h"
+#include "../includes/ast.h"
+#include "../includes/parser.h"
 #include "../libft/libft.h"
 
-int main(void)
+static void	print_redirs(t_redir *redirs, size_t count)
 {
-	t_token_list list;
-	char         *input;
-	size_t       i;
+	size_t	i;
+
+	i = 0;
+	while (i < count)
+	{
+		if (redirs[i].type == TOKEN_REDIRECT_IN)
+			printf("( < %s ) ", redirs[i].filename);
+		else if (redirs[i].type == TOKEN_REDIRECT_OUT)
+			printf("( > %s ) ", redirs[i].filename);
+		else if (redirs[i].type == TOKEN_REDIRECT_OUT_DBL)
+			printf("( >> %s ) ", redirs[i].filename);
+		else if (redirs[i].type == TOKEN_REDIRECT_IN_DBL)
+			printf("( << %s ) ", redirs[i].filename);
+		i++;
+	}
+}
+
+static void	print_node(t_ast_node *node)
+{
+	size_t	i;
+
+	if (!node)
+		return ;
+	if (node->type == NODE_COMMAND)
+	{
+		print_redirs(node->redirs, node->redir_count);
+		printf("{ ");
+		i = 0;
+		while (node->args && node->args[i])
+		{
+			printf("%s ", node->args[i]);
+			i++;
+		}
+		printf("}");
+	}
+	else if (node->type == NODE_PIPE)
+	{
+		print_node(node->left);
+		printf("\n|\n");
+		print_node(node->right);
+	}
+}
+
+int	main(void)
+{
+	char		*line;
+	t_token_list	list;
+	t_ast_node		*ast;
 
 	while (1)
 	{
-		input = readline("PuenteCuatroShell > ");
-		if (!input)
-			break;
-		add_history(input);
+		line = readline("PuenteCuatroShell > ");
+		if (!line)
+			break ;
+		add_history(line);
 		token_list_init(&list);
-		tokenize_input(input, &list);
+		tokenize_input(line, &list);
 		expand_token_list(&list);
-		i = 0;
-		while (i < list.size && list.array[i].type != TOKEN_EOF)
-		{
-			printf("Token [%s], Tipo: %d, Longitud: %zu\n",
-				list.array[i].value,
-				list.array[i].type,
-				list.array[i].length);
-			i++;
-		}
-		token_list_free(&list);
-		free(input);
+		ast = parse_input(&list);
+		print_node(ast);
+		printf("\n");
+		ast_node_free(ast);
+		free(line);
 	}
 	return (0);
 }

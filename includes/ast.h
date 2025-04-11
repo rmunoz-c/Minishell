@@ -6,7 +6,7 @@
 /*   By: enogueir <enogueir@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/10 17:22:04 by enogueir          #+#    #+#             */
-/*   Updated: 2025/04/10 18:21:58 by enogueir         ###   ########.fr       */
+/*   Updated: 2025/04/11 19:40:43 by enogueir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,5 +41,6 @@ typedef struct s_ast_node
 
 t_ast_node	*ast_node_create(t_node_type type, char **args);
 void		ast_node_free(t_ast_node *node);
+int			add_redirection(t_ast_node *cmd_node, t_token_type type, const char *filename);
 
 #endif

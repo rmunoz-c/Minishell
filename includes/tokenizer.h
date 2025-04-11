@@ -6,7 +6,7 @@
 /*   By: enogueir <enogueir@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 19:04:04 by enogueir          #+#    #+#             */
-/*   Updated: 2025/04/10 16:59:15 by enogueir         ###   ########.fr       */
+/*   Updated: 2025/04/11 19:41:35 by enogueir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ size_t	handle_dollar_quote_token(const char *str, t_token_list *list, size_t ind
 
 /*tokenizer.c*/
 size_t	handle_quote(const char *str, t_token_list *list, size_t start);
-size_t	handle_special_char(char c, t_token_list *list);
+size_t	handle_special_char(const char *str, t_token_list *list, size_t i);
 size_t	handle_word(const char *str, t_token_list *list, size_t *i);
 void	tokenize_input(const char *str, t_token_list *list);
 
