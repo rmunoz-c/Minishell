@@ -6,7 +6,7 @@
 /*   By: enogueir <enogueir@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/10 17:23:48 by enogueir          #+#    #+#             */
-/*   Updated: 2025/04/10 18:28:23 by enogueir         ###   ########.fr       */
+/*   Updated: 2025/04/25 20:35:48 by enogueir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,7 +69,7 @@ t_ast_node	*ast_node_create(t_node_type type, char **args)
 	return (node);
 }
 
-void	ast_node_free(t_ast_node *node)
+void ast_node_free(t_ast_node *node)
 {
 	size_t	i;
 
@@ -79,17 +79,23 @@ void	ast_node_free(t_ast_node *node)
 	{
 		i = 0;
 		while (node->args[i])
-			(free(node->args[i]), i++);
+			free(node->args[i++]);
 		free(node->args);
+		node->args = NULL;
 	}
 	if (node->redirs)
 	{
 		i = 0;
 		while (i < node->redir_count)
-			(free(node->redirs[i].filename), i++);
+			free(node->redirs[i++].filename);
 		free(node->redirs);
+		node->redirs = NULL;
+		node->redir_count = 0;
 	}
 	ast_node_free(node->left);
+	node->left = NULL;
 	ast_node_free(node->right);
+	node->right = NULL;
 	free(node);
 }
+

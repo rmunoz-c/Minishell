@@ -14,6 +14,7 @@ LFLAGS := -Llibft -lft -lreadline
 # Rutas de fuentes y objetos
 SRC :=	src/ast/ast_utils.c \
 		src/ast/ast.c \
+		src/exec/execute_node.c \
 		src/exec/heredoc.c \
 		src/expander/expander_build.c \
 		src/expander/expander_utils.c \

@@ -6,7 +6,7 @@
 /*   By: enogueir <enogueir@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/10 17:22:04 by enogueir          #+#    #+#             */
-/*   Updated: 2025/04/11 19:40:43 by enogueir         ###   ########.fr       */
+/*   Updated: 2025/04/24 18:10:42 by enogueir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 
 # include <stddef.h>
 # include "minishell.h"
+
 
 typedef enum e_node_type
 {

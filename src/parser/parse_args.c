@@ -6,7 +6,7 @@
 /*   By: enogueir <enogueir@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/10 18:35:09 by enogueir          #+#    #+#             */
-/*   Updated: 2025/04/11 19:38:29 by enogueir         ###   ########.fr       */
+/*   Updated: 2025/04/25 19:07:07 by enogueir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,9 +24,15 @@ static size_t count_args(t_token_list *list, size_t start, size_t end)
 	count = 0;
 	while (i < end)
 	{
-		if (list->array[i].type != TOKEN_REDIRECT_IN
-			&& list->array[i].type != TOKEN_REDIRECT_OUT
-			&& list->array[i].type != TOKEN_PIPE
+		if (list->array[i].type == TOKEN_REDIRECT_IN
+			|| list->array[i].type == TOKEN_REDIRECT_OUT
+			|| list->array[i].type == TOKEN_REDIRECT_IN_DBL
+			|| list->array[i].type == TOKEN_REDIRECT_OUT_DBL)
+		{
+			i += 2;
+			continue;
+		}
+		if (list->array[i].type != TOKEN_PIPE
 			&& list->array[i].type != TOKEN_EOF)
 			count++;
 		i++;
@@ -57,7 +63,7 @@ static char **allocate_args(t_token_list *list, size_t start, size_t end)
 	return args;
 }
 
-static int fill_args(t_token_list *list, size_t start, size_t end, char **args)
+static int fill_args(t_token_list *lst, size_t start, size_t end, char **args)
 {
 	size_t i;
 	size_t j;
@@ -66,23 +72,26 @@ static int fill_args(t_token_list *list, size_t start, size_t end, char **args)
 	j = 0;
 	while (i < end)
 	{
-		if (list->array[i].type != TOKEN_REDIRECT_IN
-			&& list->array[i].type != TOKEN_REDIRECT_OUT
-			&& list->array[i].type != TOKEN_PIPE
-			&& list->array[i].type != TOKEN_EOF)
+		if (lst->array[i].type == TOKEN_REDIRECT_IN
+			|| lst->array[i].type == TOKEN_REDIRECT_OUT
+			|| lst->array[i].type == TOKEN_REDIRECT_IN_DBL
+			|| lst->array[i].type == TOKEN_REDIRECT_OUT_DBL)
 		{
-			args[j] = ft_strdup(list->array[i].value);
+			i += 2;
+			continue;
+		}
+		if (lst->array[i].type != TOKEN_PIPE && lst->array[i].type != TOKEN_EOF)
+		{
+			args[j] = ft_strdup(lst->array[i].value);
 			if (!args[j])
-			{
-				free_args_partial(args, j);
-				return 0;
-			}
+				return (free_args_partial(args, j), 0);
 			j++;
 		}
 		i++;
 	}
 	return 1;
 }
+
 
 char **collect_args(t_token_list *list, size_t start, size_t end)
 {
