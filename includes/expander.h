@@ -6,7 +6,7 @@
 /*   By: enogueir <enogueir@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 19:04:39 by enogueir          #+#    #+#             */
-/*   Updated: 2025/04/10 16:55:06 by enogueir         ###   ########.fr       */
+/*   Updated: 2025/05/05 14:11:19 by enogueir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ char	*build_expanded_word(const char *str, size_t *pos);
 /*expander_utils.c*/
 char	*expand_exit_status(void);
 char	*expand_variable(const char *var);
-int 	append_char_to_result(char c, char **result);
+int		append_char_to_result(char c, char **result);
 int		process_expansion(const char *str, size_t *pos, char **res);
 int		expand_and_join(const char *str, size_t *pos, char **result);
 

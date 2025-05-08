@@ -6,7 +6,7 @@
 /*   By: enogueir <enogueir@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/03 17:29:18 by enogueir          #+#    #+#             */
-/*   Updated: 2025/04/10 16:52:40 by enogueir         ###   ########.fr       */
+/*   Updated: 2025/05/05 14:32:29 by enogueir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,12 +15,12 @@
 #include "../../includes/tokenizer.h"
 #include "../../libft/libft.h"
 
-size_t handle_dollar_quote(const char *str, t_token_list *list, size_t i)
+size_t	handle_dollar_quote(const char *str, t_token_list *list, size_t i)
 {
-	char  quote;
-	size_t start;
-	size_t end;
-	char  *inner;
+	char	quote;
+	size_t	start;
+	size_t	end;
+	char	*inner;
 
 	quote = str[i + 1];
 	i += 2;
@@ -41,7 +41,6 @@ size_t handle_dollar_quote(const char *str, t_token_list *list, size_t i)
 	free(inner);
 	return (i - (start - 2));
 }
-
 
 char	*build_expanded_word(const char *str, size_t *pos)
 {

@@ -12,9 +12,12 @@ IFLAGS := -Iincludes -Ilibft
 LFLAGS := -Llibft -lft -lreadline
 
 # Rutas de fuentes y objetos
-SRC :=	src/ast/ast_utils.c \
+SRC :=	src/ast/ast_node_free.c \
+		src/ast/ast_utils.c \
 		src/ast/ast.c \
+		src/exec/execute_external.c \
 		src/exec/execute_node.c \
+		src/exec/external_utils.c \
 		src/exec/heredoc.c \
 		src/expander/expander_build.c \
 		src/expander/expander_utils.c \

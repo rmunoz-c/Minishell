@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   expander_utils.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: enogueir <enogueir@student.42madrid>       +#+  +:+       +#+        */
+/*   By: enogueir <enogueir@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/03 17:28:45 by enogueir          #+#    #+#             */
-/*   Updated: 2025/04/03 18:51:29 by enogueir         ###   ########.fr       */
+/*   Updated: 2025/05/05 14:32:25 by enogueir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 #include "../../includes/minishell.h"
 #include "../../libft/libft.h"
 
-int	g_exit_status = 0;
+int		g_exit_status = 0;
 
 char	*expand_exit_status(void)
 {
@@ -33,21 +33,20 @@ char	*expand_variable(const char *var)
 	return (ft_strdup(value));
 }
 
-int append_char_to_result(char c, char **result)
+int	append_char_to_result(char c, char **result)
 {
-	char buff[2];
-	char *temp;
+	char	buff[2];
+	char	*temp;
 
 	buff[0] = c;
 	buff[1] = '\0';
 	temp = ft_strjoin(*result, buff);
 	if (!temp)
-		return 0;
+		return (0);
 	free(*result);
 	*result = temp;
-	return 1;
+	return (1);
 }
-
 
 int	process_expansion(const char *str, size_t *pos, char **res)
 {

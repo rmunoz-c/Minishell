@@ -6,7 +6,7 @@
 /*   By: enogueir <enogueir@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 19:50:24 by enogueir          #+#    #+#             */
-/*   Updated: 2025/04/10 16:36:44 by enogueir         ###   ########.fr       */
+/*   Updated: 2025/05/05 14:32:22 by enogueir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,11 +25,11 @@ char	*get_env_value(const char *name)
 	return (ft_strdup(value));
 }
 
-char *expand_dollar(const char *str, size_t *i)
+char	*expand_dollar(const char *str, size_t *i)
 {
-	size_t start;
-	char  *var;
-	char  *val;
+	size_t	start;
+	char	*var;
+	char	*val;
 
 	(*i)++;
 	if (str[*i] == '?')
@@ -49,7 +49,6 @@ char *expand_dollar(const char *str, size_t *i)
 	free(var);
 	return (val);
 }
-
 
 char	*expand_string(const char *str)
 {

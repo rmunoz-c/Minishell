@@ -6,22 +6,158 @@
 /*   By: enogueir <enogueir@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/27 19:18:59 by enogueir          #+#    #+#             */
-/*   Updated: 2025/04/25 19:38:29 by enogueir         ###   ########.fr       */
+/*   Updated: 2025/05/08 22:42:41 by enogueir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <readline/readline.h>
-#include <readline/history.h>
+#include "../includes/ast.h"
+#include "../includes/execute.h"
+#include "../includes/expander.h"
 #include "../includes/minishell.h"
+#include "../includes/parser.h"
 #include "../includes/token_list.h"
 #include "../includes/tokenizer.h"
-#include "../includes/expander.h"
-#include "../includes/ast.h"
-#include "../includes/parser.h"
 #include "../libft/libft.h"
-#include "../includes/execute.h"
+#include <readline/history.h>
+#include <readline/readline.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+
+// void log_error_to_history(const char *error_message) {
+//     FILE *history_file = fopen("history.txt", "a");
+//     if (history_file == NULL) {
+//         perror("Error abriendo el archivo de historial");
+//         return;
+//     }
+
+//     // Añadir la línea de separación para un nuevo error
+//     fprintf(history_file, "----------------------------\n");
+
+//     // Registrar el mensaje de error
+//     fprintf(history_file, "ERROR: %s\n", error_message);
+
+//     // Registrar la fecha y hora del error
+//     time_t rawtime;
+//     struct tm *timeinfo;
+//     char time_str[100];
+
+//     time(&rawtime);
+//     timeinfo = localtime(&rawtime);
+//     strftime(time_str, sizeof(time_str), "%Y-%m-%d %H:%M:%S", timeinfo);
+
+//     fprintf(history_file, "Fecha y hora: %s\n", time_str);
+
+//     fclose(history_file);
+// }
+
+// void handle_error(int sig) {
+//     const char *error_message = NULL;
+
+//     // Identificar el tipo de señal
+//     switch (sig) {
+//         case SIGSEGV:
+//             error_message = "Segmentation fault (SIGSEGV) detected.";
+//             break;
+//         case SIGFPE:
+//             error_message = "Floating point exception (SIGFPE) detected.";
+//             break;
+//         case SIGILL:
+//             error_message = "Illegal instruction (SIGILL) detected.";
+//             break;
+//         case SIGABRT:
+//             error_message = "Aborted (SIGABRT) detected.";
+//             break;
+//         default:
+//             error_message = "Unknown error detected.";
+//             break;
+//     }
+
+//     // Loggear el error y mostrarlo en la terminal
+//     log_error_to_history(error_message);
+//     fprintf(stderr, "ERROR: %s\n", error_message);
+
+//     // Terminar el programa
+//     exit(1);
+// }
+
+// void append_command_with_output_to_history(const char *command, const char *output) {
+//     FILE *history_file = fopen("history.txt", "a");  // Abre el archivo en modo append
+//     if (history_file == NULL) {
+//         perror("Error abriendo el archivo de historial");
+//         return;
+//     }
+
+//     fprintf(history_file, "Comando: %s\n", command);  // Escribe el comando en el archivo
+//     fprintf(history_file, "Salida: %s\n\n", output);  // Escribe la salida del comando
+//   	fprintf(history_file, "__________________________________________\n\n");
+// 	fclose(history_file);
+// }
+
+// static	void add_separator_to_history() {
+//     FILE *history_file = fopen("history.txt", "a");
+//     if (history_file == NULL) {
+//         perror("Error abriendo el archivo de historial");
+//         return;
+//     }
+//     // Agregar la línea de separación al inicio de una nueva ejecución de minishell
+//     fprintf(history_file, "----------------------------\n\n");
+//     fclose(history_file);
+// }
+
+// void capture_and_save_output(const char *command, t_minishell *shell) {
+//     int pipefd[2];
+//     pid_t pid;
+//     char output[1024];
+
+//     if (pipe(pipefd) == -1) {
+//         perror("Error al crear pipe");
+//         return;
+//     }
+
+//     pid = fork();
+//     if (pid == -1) {
+//         perror("Error al crear proceso hijo");
+//         return;
+//     }
+
+//     if (pid == 0) {
+//         // Redirigir la salida estándar y la de error al pipe
+//         close(pipefd[0]);
+//         dup2(pipefd[1], STDOUT_FILENO);  // Redirigir stdout
+//         dup2(pipefd[1], STDERR_FILENO);  // Redirigir stderr
+
+//         // Ejecutar el comando real con execute_node
+//         t_token_list list;
+//         token_list_init(&list);
+//         tokenize_input(command, &list);  // Tokenizar el comando
+//         expand_token_list(&list);  // Expansión de la lista de tokens
+//         t_ast_node *ast = parse_input(&list);  // Parsear el comando
+
+//         if (ast) {
+//             execute_node(ast, shell);  // Ejecutar el comando real con execute_node
+//             ast_node_free(ast);
+//         }
+
+//         close(pipefd[1]);
+//         exit(0);
+//     } else {
+//         // En el proceso padre
+//         close(pipefd[1]);
+//         ssize_t bytes_read = read(pipefd[0], output, sizeof(output) - 1);
+//         if (bytes_read > 0) {
+//             output[bytes_read] = '\0';  // Null-terminar la salida leída
+//             // Guardar el comando y su salida en el archivo de historial
+//             append_command_with_output_to_history(command, output);
+//         }
+//         close(pipefd[0]);
+
+//         // Esperar a que el hijo termine
+//         wait(NULL);
+//     }
+// }
+
 
 static void	print_redirs(t_redir *redirs, size_t count)
 {
@@ -68,44 +204,58 @@ static void	print_node(t_ast_node *node)
 	}
 }
 
-int	main(int argc, char **argv, char **envp)
+int main(int argc, char **argv, char **envp)
 {
-	char			*line;
-	t_token_list	list;
-	t_ast_node		*ast;
-	t_minishell		shell;
-	//size_t 			i = 0;
+    char            *line;
+    t_token_list    list;
+    t_ast_node      *ast;
+    t_minishell     shell;
 
-	(void)argc;
-	(void)argv;
-	shell.envp = envp;
+    (void)argc;
+    (void)argv;
+    shell.envp = envp;
 
-	while (1)
-{
-	line = readline("PuenteCuatroShell > ");
-	if (!line)
-		break ;
-	add_history(line);
-	token_list_init(&list);
-	tokenize_input(line, &list);
-	expand_token_list(&list);
-	ast = parse_input(&list);
+    // Registrar el manejador de señales para diferentes errores
+    // signal(SIGSEGV, handle_error);  // Segmentation fault
+    // signal(SIGFPE, handle_error);   // Floating point exception
+    // signal(SIGILL, handle_error);   // Illegal instruction
+    // signal(SIGABRT, handle_error);  // Abort
 
-	if (ast)
-	{
-		print_node(ast);
-		printf("\n");
-		if (ast->type == NODE_COMMAND)
-			execute_node(ast, &shell);
-		ast_node_free(ast);
-	}
+    // Añadir la separación al historial solo una vez al principio de la ejecución
+    // add_separator_to_history();
 
-	token_list_free(&list);
-	free(line);
+    while (1)
+    {
+        line = readline("PuenteCuatroShell > ");
+        if (!line)
+            break ;
+
+        // Añadir el comando al historial de readline
+        add_history(line);
+
+        // // Capturar y guardar la salida del comando en el historial
+        // capture_and_save_output(line, &shell);  // Captura y guarda la salida real
+
+        token_list_init(&list);
+        tokenize_input(line, &list);
+        expand_token_list(&list);
+        ast = parse_input(&list);
+
+       if (ast)
+        {
+            print_node(ast);
+            printf("\n");
+            process_heredocs(ast);
+            execute_node(ast, &shell);
+            ast_node_free(ast);
+        }
+        token_list_free(&list);
+        free(line);
+    }
+    return (0);
 }
 
-	return (0);
-}
+
 
 
 /*(int	main(void)
