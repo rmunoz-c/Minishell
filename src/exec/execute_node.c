@@ -6,12 +6,13 @@
 /*   By: enogueir <enogueir@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 17:58:40 by enogueir          #+#    #+#             */
-/*   Updated: 2025/05/08 22:41:52 by enogueir         ###   ########.fr       */
+/*   Updated: 2025/05/28 19:37:11 by enogueir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/ast.h"
 #include "../../includes/execute.h"
+#include "../../includes/builtins.h"
 #include "../../includes/minishell.h"
 
 static int	setup_redirections(t_ast_node *node)
@@ -137,25 +138,60 @@ int	execute_node(t_ast_node *node, t_minishell *shell)
 {
 	pid_t	pid;
 	int		status;
+	int		save_stdin;
+	int		save_stdout;
 
 	if (!node)
 		return (1);
+	if (node->type == NODE_COMMAND && is_builtin(node->args[0]))
+	{
+		save_stdin = dup(STDIN_FILENO);
+		save_stdout = dup(STDOUT_FILENO);
+		if (setup_redirections(node) < 0)
+		{
+			shell->exit_status = errno;
+			dup2(save_stdin, STDIN_FILENO);
+			dup2(save_stdout, STDOUT_FILENO);
+			close(save_stdin);
+			close(save_stdout);
+			return (shell->exit_status);
+		}
+		shell->exit_status = execute_builtin(node->args, shell);
+		dup2(save_stdin, STDIN_FILENO);
+		dup2(save_stdout, STDOUT_FILENO);
+		close(save_stdin);
+		close(save_stdout);
+		return (shell->exit_status);
+	}
 	if (node->type == NODE_PIPE)
-		return (execute_pipe_node(node, shell));
+	{
+		shell->exit_status = execute_pipe_node(node, shell);
+		return (shell->exit_status);
+	}
 	if (node->type == NODE_COMMAND)
 	{
-		if (setup_redirections(node) < 0)
-			exit(EXIT_FAILURE);
 		pid = fork();
 		if (pid < 0)
-			return (perror("fork"), 1);
+		{
+			perror("minishell: fork");
+			shell->exit_status = 1;
+			return (shell->exit_status);
+		}
 		if (pid == 0)
 		{
-			handle_external_command(node->args, shell->envp);
-			exit(EXIT_FAILURE);
+			if (setup_redirections(node) < 0)
+				_exit(errno);
+			handle_external_command(node->args, shell);
+			_exit(errno);
 		}
 		waitpid(pid, &status, 0);
-		return (WEXITSTATUS(status));
+		if (WIFEXITED(status))
+            shell->exit_status = WEXITSTATUS(status);
+        else if (WIFSIGNALED(status))
+            shell->exit_status = 128 + WTERMSIG(status);
+        return (shell->exit_status);
 	}
 	return (1);
 }
+
+

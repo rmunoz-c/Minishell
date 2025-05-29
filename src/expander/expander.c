@@ -6,7 +6,7 @@
 /*   By: enogueir <enogueir@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 19:50:24 by enogueir          #+#    #+#             */
-/*   Updated: 2025/05/05 14:32:22 by enogueir         ###   ########.fr       */
+/*   Updated: 2025/05/29 21:20:42 by enogueir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,42 +15,54 @@
 #include "../../libft/libft.h"
 #include <stdlib.h>
 
-char	*get_env_value(const char *name)
+char	*get_env_value(const char *name, t_envp *env, size_t count)
 {
-	char	*value;
+	size_t	i;
 
-	value = getenv(name);
-	if (!value)
-		return (ft_strdup(""));
-	return (ft_strdup(value));
+	i = 0;
+	while (i < count)
+	{
+		if (!ft_strcmp(env[i].key, (char *)name))
+			return (ft_strdup(env[i].value));
+		i++;
+	}
+	return (ft_strdup(""));
 }
 
-char	*expand_dollar(const char *str, size_t *i)
+char	*expand_dollar(const char *str, size_t *i, t_minishell *shell)
 {
 	size_t	start;
 	char	*var;
 	char	*val;
+	char	tmp[3];
 
 	(*i)++;
 	if (str[*i] == '?')
 	{
 		(*i)++;
-		return (ft_itoa(g_exit_status));
+		return (ft_itoa(shell->exit_status));
 	}
-	if (str[*i] == '\'' || str[*i] == '"')
-		return (ft_strdup("$"));
+	if (!ft_isalnum(str[*i]) && str[*i] != '_')
+	{
+		tmp[0] = '$';
+		tmp[1] = str[*i];
+		tmp[2] = '\0';
+		if (str[*i])
+			(*i)++;
+		return (ft_strdup(tmp));
+	}
 	start = *i;
 	while (str[*i] && (ft_isalnum(str[*i]) || str[*i] == '_'))
 		(*i)++;
-	if (*i == start)
-		return (ft_strdup("$"));
 	var = ft_substr(str, start, *i - start);
-	val = get_env_value(var);
+	if (!var)
+		return (NULL);
+	val = get_env_value(var, shell->envp, shell->env_count);
 	free(var);
 	return (val);
 }
 
-char	*expand_string(const char *str)
+char	*expand_string(const char *str, t_minishell *shell)
 {
 	size_t	i;
 	char	*res;
@@ -63,7 +75,7 @@ char	*expand_string(const char *str)
 	{
 		if (str[i] == '$')
 		{
-			exp = expand_dollar(str, &i);
+			exp = expand_dollar(str, &i, shell);
 			tmp = ft_strjoin(res, exp);
 			(free(res), free(exp));
 			res = tmp;
@@ -79,7 +91,7 @@ char	*expand_string(const char *str)
 	return (res);
 }
 
-void	expand_token_list(t_token_list *list)
+void	expand_token_list(t_token_list *list, t_minishell *shell)
 {
 	size_t	i;
 	char	*new;
@@ -87,9 +99,12 @@ void	expand_token_list(t_token_list *list)
 	i = 0;
 	while (i < list->size)
 	{
-		if (list->array[i].type == TOKEN_WORD)
+		if (list->array[i].type == TOKEN_WORD
+			&& list->array[i].in_single_quote == 0)
 		{
-			new = expand_string(list->array[i].value);
+			new = expand_string(list->array[i].value, shell);
+			if (!new)
+				return ;
 			free(list->array[i].value);
 			list->array[i].value = new;
 		}
@@ -97,7 +112,7 @@ void	expand_token_list(t_token_list *list)
 	}
 }
 
-char	*expand_inside_string(const char *substr)
+char	*expand_inside_string(const char *substr, t_minishell *shell)
 {
-	return (expand_string(substr));
+	return (expand_string(substr, shell));
 }

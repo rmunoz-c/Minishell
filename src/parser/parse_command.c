@@ -6,13 +6,14 @@
 /*   By: enogueir <enogueir@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/10 17:33:21 by enogueir          #+#    #+#             */
-/*   Updated: 2025/05/05 14:32:57 by enogueir         ###   ########.fr       */
+/*   Updated: 2025/05/29 21:40:54 by enogueir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/ast.h"
 #include "../../includes/parser.h"
 #include "../../includes/token_list.h"
+#include "../../includes/tokenizer.h"
 #include "../../libft/libft.h"
 
 static int	handle_redirect(t_token_list *list, size_t i, size_t end,
@@ -20,12 +21,12 @@ static int	handle_redirect(t_token_list *list, size_t i, size_t end,
 {
 	if ((i + 1) >= end || list->array[i + 1].type != TOKEN_WORD)
 	{
-		token_list_add(list, TOKEN_ERROR, "Syntax error near redirect");
+		add_special_token(list, TOKEN_ERROR, "Syntax error near redirect", 27);
 		return (0);
 	}
 	if (!add_redirection(cmd, list->array[i].type, list->array[i + 1].value))
 	{
-		token_list_add(list, TOKEN_ERROR, "Failed to add redirection");
+		add_special_token(list, TOKEN_ERROR, "Failed to add redirection", 26);
 		return (0);
 	}
 	return (1);

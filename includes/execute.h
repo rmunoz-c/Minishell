@@ -6,7 +6,7 @@
 /*   By: enogueir <enogueir@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 18:05:33 by enogueir          #+#    #+#             */
-/*   Updated: 2025/05/08 22:03:12 by enogueir         ###   ########.fr       */
+/*   Updated: 2025/05/27 21:20:41 by enogueir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,8 +20,7 @@
 
 /*execute_external.c*/
 void	execute_external(char *cmd_path, char **args, char **env);
-void	handle_external_command(char **args, char **env);
-
+void 	handle_external_command(char **args, t_minishell *shell);
 /*execute_node.c*/
 int		execute_pipe_node(t_ast_node *node, t_minishell *shell);
 int		execute_node(t_ast_node *node, t_minishell *shell);

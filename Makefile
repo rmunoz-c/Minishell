@@ -15,6 +15,10 @@ LFLAGS := -Llibft -lft -lreadline
 SRC :=	src/ast/ast_node_free.c \
 		src/ast/ast_utils.c \
 		src/ast/ast.c \
+		src/builtins/builtin_basic.c \
+		src/builtins/builtin_envmod.c \
+		src/builtins/builtin_shellctl.c \
+		src/builtins/builtins_utils.c \
 		src/exec/execute_external.c \
 		src/exec/execute_node.c \
 		src/exec/external_utils.c \
@@ -29,8 +33,9 @@ SRC :=	src/ast/ast_node_free.c \
 		src/tokenizer/quote_handler.c \
 		src/tokenizer/tokenizer_utils.c \
 		src/tokenizer/tokenizer.c \
+		src/env_utils.c \
 		src/free.c \
-		src/test_tokenizer.c \
+		src/main.c \
 		src/token_list.c \
 
 BUILD_DIR := build

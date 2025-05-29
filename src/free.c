@@ -6,7 +6,7 @@
 /*   By: enogueir <enogueir@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 19:52:30 by enogueir          #+#    #+#             */
-/*   Updated: 2025/04/07 19:15:19 by enogueir         ###   ########.fr       */
+/*   Updated: 2025/05/28 19:16:01 by enogueir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,14 +29,15 @@ void	free_tokens(t_token_list *list)
 	list->capacity = 0;
 }
 
-void	free_envp(char **envp)
+void	free_envp(t_envp *envp, size_t count)
 {
 	size_t	i;
 
 	i = 0;
-	while (envp && envp[i])
+	while (i < count)
 	{
-		free(envp[i]);
+		free(envp[i].key);
+		free(envp[i].value);
 		i++;
 	}
 	free(envp);
@@ -45,5 +46,18 @@ void	free_envp(char **envp)
 void	free_all(t_minishell *data)
 {
 	free_tokens(data->tokens);
-	free_envp(data->envp);
+	free_envp(data->envp, data->env_count);
+}
+
+void	free_flat_env(char **env)
+{
+	size_t	i;
+
+	i = 0;
+	while (env[i])
+	{
+		free(env[i]);
+		i++;
+	}
+	free(env);
 }

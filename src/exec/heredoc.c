@@ -6,11 +6,12 @@
 /*   By: enogueir <enogueir@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 19:01:40 by enogueir          #+#    #+#             */
-/*   Updated: 2025/05/08 22:20:00 by enogueir         ###   ########.fr       */
+/*   Updated: 2025/05/29 19:35:28 by enogueir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
+#include "../../includes/expander.h"
 #include "../../includes/ast.h"
 
 int	read_heredoc(char *delimiter)
@@ -35,6 +36,7 @@ int	read_heredoc(char *delimiter)
 	close(pipefd[1]);
 	return (pipefd[0]);
 }
+
 
 void	process_heredocs(t_ast_node *node)
 {

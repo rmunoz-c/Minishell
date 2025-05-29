@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   token_list.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: enogueir <enogueir@student.42madrid>       +#+  +:+       +#+        */
+/*   By: enogueir <enogueir@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/27 19:08:27 by enogueir          #+#    #+#             */
-/*   Updated: 2025/04/03 18:55:36 by enogueir         ###   ########.fr       */
+/*   Updated: 2025/05/29 21:29:44 by enogueir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,28 +62,19 @@ static int	token_list_resize(t_token_list *list)
 	return (1);
 }
 
-int	token_list_add(t_token_list *list, t_token_type type, const char *val)
+int	token_list_add_token(t_token_list *list, t_token *token)
 {
-	char	*dup;
-
-	if (list->size == list->capacity)
+	if (list->size >= list->capacity)
 	{
 		if (!token_list_resize(list))
 			return (0);
 	}
-	dup = NULL;
-	if (val)
-	{
-		dup = ft_strdup(val);
-		if (!dup)
-			return (0);
-	}
-	list->array[list->size].type = type;
-	list->array[list->size].value = dup;
-	if (dup)
-		list->array[list->size].length = ft_strlen(dup);
-	else
-		list->array[list->size].length = 0;
+	list->array[list->size].type = token->type;
+	list->array[list->size].value = ft_strdup(token->value);
+	if (!list->array[list->size].value)
+		return (0);
+	list->array[list->size].length = token->length;
+	list->array[list->size].in_single_quote = token->in_single_quote;
 	list->size++;
 	return (1);
 }
