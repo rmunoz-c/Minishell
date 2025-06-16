@@ -6,7 +6,7 @@
 /*   By: enogueir <enogueir@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 17:59:38 by enogueir          #+#    #+#             */
-/*   Updated: 2025/06/12 18:00:27 by enogueir         ###   ########.fr       */
+/*   Updated: 2025/06/16 23:20:05 by enogueir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,6 +55,7 @@ int	execute_pipe_node(t_ast_node *node, t_minishell *shell)
 	int		fd[2];
 	pid_t	left;
 	pid_t	right;
+	int		status;
 
 	if (pipe(fd) < 0)
 		return (perror("pipe"), 1);
@@ -63,6 +64,7 @@ int	execute_pipe_node(t_ast_node *node, t_minishell *shell)
 	close(fd[0]);
 	close(fd[1]);
 	waitpid(left, NULL, 0);
-	waitpid(right, NULL, 0);
+	waitpid(right, &status, 0);
+	handle_exec_status(status, shell);
 	return (0);
 }

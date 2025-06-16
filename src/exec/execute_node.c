@@ -6,23 +6,13 @@
 /*   By: enogueir <enogueir@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/11 18:22:09 by enogueir          #+#    #+#             */
-/*   Updated: 2025/06/16 18:34:17 by enogueir         ###   ########.fr       */
+/*   Updated: 2025/06/16 23:24:45 by enogueir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/ast.h"
 #include "../../includes/minishell.h"
 #include "../../includes/execute.h"
-
-static void	handle_exec_status(int status, t_minishell *shell)
-{
-	if (WIFEXITED(status))
-		shell->exit_status = WEXITSTATUS(status);
-	else if (WIFSIGNALED(status))
-		shell->exit_status = 128 + WTERMSIG(status);
-	else
-		shell->exit_status = 1;
-}
 
 static void	fork_and_exec(t_ast_node *node, t_minishell *shell)
 {
@@ -87,6 +77,16 @@ static int	exec_builtin_with_redir(t_ast_node *node, t_minishell *shell)
 	close(save_out);
 	shell->exit_status = result;
 	return (result);
+}
+
+void	handle_exec_status(int status, t_minishell *shell)
+{
+	if (WIFEXITED(status))
+		shell->exit_status = WEXITSTATUS(status);
+	else if (WIFSIGNALED(status))
+		shell->exit_status = 128 + WTERMSIG(status);
+	else
+		shell->exit_status = 1;
 }
 
 int	execute_node(t_ast_node *node, t_minishell *shell)

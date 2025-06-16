@@ -6,7 +6,7 @@
 /*   By: enogueir <enogueir@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 18:05:33 by enogueir          #+#    #+#             */
-/*   Updated: 2025/06/16 20:20:58 by enogueir         ###   ########.fr       */
+/*   Updated: 2025/06/16 23:19:51 by enogueir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@ int		is_builtin(const char *cmd);
 int		is_exit_command(t_ast_node *ast);
 
 /*execute_node.c*/
+void	handle_exec_status(int status, t_minishell *shell);
 int		execute_node(t_ast_node *node, t_minishell *shell);
 
 /*execute_pipe.c*/

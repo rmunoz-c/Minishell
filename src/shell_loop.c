@@ -6,7 +6,7 @@
 /*   By: enogueir <enogueir@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/16 19:27:45 by enogueir          #+#    #+#             */
-/*   Updated: 2025/06/16 22:31:26 by enogueir         ###   ########.fr       */
+/*   Updated: 2025/06/16 23:23:33 by enogueir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,9 +55,8 @@ static int	process_raw_line(char **raw_line)
 static void	execute_command(t_minishell *shell, t_ast_node *ast)
 {
 	g_interactive = 0;
-	if (is_exit_command(ast))
-		return ;
-	if (ast && ast->type == NODE_COMMAND && ast->args && ast->args[0]
+	if (ast && ast->type == NODE_COMMAND
+		&& ast->args && ast->args[0]
 		&& is_builtin(ast->args[0]))
 		execute_builtin(ast, shell);
 	else if (ast)
