@@ -5,59 +5,57 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: enogueir <enogueir@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/04/03 17:29:18 by enogueir          #+#    #+#             */
-/*   Updated: 2025/05/29 21:52:53 by enogueir         ###   ########.fr       */
+/*   Created: 2025/06/05 19:01:25 by enogueir          #+#    #+#             */
+/*   Updated: 2025/06/12 21:32:12 by enogueir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../includes/expander.h"
-#include "../../includes/minishell.h"
-#include "../../includes/tokenizer.h"
-#include "../../libft/libft.h"
+#include "../includes/expander.h"
+#include "../includes/minishell.h"
 
-// size_t	handle_dollar_quote(const char *str, t_token_list *list, size_t i)
-// {
-// 	char		quote;
-// 	size_t		start;
-// 	size_t		end;
-// 	char		*inner;
-// 	size_t		length;
-
-// 	quote = str[i + 1];
-// 	i += 2;
-// 	start = i;
-// 	while (str[i] && str[i] != quote)
-// 		i++;
-// 	if (!str[i])
-// 	{
-// 		add_special_token(list, TOKEN_ERROR, "Unclosed quote after $", 23);
-// 		return (i - (start - 2));
-// 	}
-// 	end = i;
-// 	i++;
-// 	inner = ft_substr(str, start, end - start);
-// 	if (!inner)
-// 		return (i - (start - 2));
-// 	length = end - start;
-// 	add_special_token(list, TOKEN_WORD, inner, length);
-// 	free(inner);
-// 	return (i - (start - 2));
-// }
-
-char	*build_expanded_word(const char *str, size_t *pos, t_minishell *shell)
+void	insert_split_tokens(t_token_list *list, size_t index,
+	char **parts, t_token *ref)
 {
-	char	*res;
+	size_t	j;
+	t_token	new_token;
 
-	res = ft_strdup("");
-	if (!res)
-		return (NULL);
-	while (str[*pos] && !isspace(str[*pos]) && !is_special_char(str[*pos]))
+	free(ref->value);
+	ref->value = ft_strdup(parts[0]);
+	ref->length = ft_strlen(parts[0]);
+	ref->in_single_quote = 0;
+	ref->in_double_quote = 0;
+	j = 1;
+	while (parts[j])
 	{
-		if (!process_expansion(str, pos, &res, shell))
-		{
-			free(res);
-			return (NULL);
-		}
+		new_token.type = TOKEN_WORD;
+		new_token.value = ft_strdup(parts[j]);
+		new_token.length = ft_strlen(parts[j]);
+		new_token.in_single_quote = ref->in_single_quote;
+		new_token.in_double_quote = ref->in_double_quote;
+		token_list_insert(list, index + j, new_token);
+		j++;
 	}
-	return (res);
+}
+
+void	split_expanded_token(t_token_list *list)
+{
+	size_t	i;
+	char	**parts;
+
+	i = 0;
+	while (i < list->size)
+	{
+		if (list->array[i].type == TOKEN_WORD
+			&& !list->array[i].in_single_quote
+			&& !list->array[i].in_double_quote
+			&& ft_strchr(list->array[i].value, ' '))
+		{
+			parts = ft_split(list->array[i].value, ' ');
+			if (!parts)
+				return ;
+			insert_split_tokens(list, i, parts, &list->array[i]);
+			ft_free_array(parts);
+		}
+		i++;
+	}
 }

@@ -5,26 +5,35 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: enogueir <enogueir@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/04/10 17:31:39 by enogueir          #+#    #+#             */
-/*   Updated: 2025/05/29 21:41:15 by enogueir         ###   ########.fr       */
+/*   Created: 2025/06/09 18:18:12 by enogueir          #+#    #+#             */
+/*   Updated: 2025/06/12 21:13:48 by enogueir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../includes/ast.h"
+#include "../../includes/minishell.h"
 #include "../../includes/parser.h"
-#include "../../includes/token_list.h"
-#include "../../includes/tokenizer.h"
-#include "../../libft/libft.h"
+
+static int	has_token_error(t_token_list *list)
+{
+	size_t	i;
+
+	i = 0;
+	while (i < list->size)
+	{
+		if (list->array[i].type == TOKEN_ERROR)
+			return (1);
+		i++;
+	}
+	return (0);
+}
 
 t_ast_node	*parse_input(t_token_list *list)
 {
 	if (!list || list->size == 0)
 		return (NULL);
-	if (list->array[0].type == TOKEN_PIPE
-		|| list->array[list->size - 1].type == TOKEN_PIPE)
-	{
-		add_special_token(list, TOKEN_ERROR, "Pipe at start or end", 21);
+	if (has_token_error(list))
 		return (NULL);
-	}
+	if (!validate_token_syntax(list))
+		return (NULL);
 	return (parse_pipeline(list, 0, list->size));
 }

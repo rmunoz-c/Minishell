@@ -5,78 +5,77 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: enogueir <enogueir@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/05/08 19:32:33 by enogueir          #+#    #+#             */
-/*   Updated: 2025/05/28 18:46:19 by enogueir         ###   ########.fr       */
+/*   Created: 2025/06/12 18:24:25 by enogueir          #+#    #+#             */
+/*   Updated: 2025/06/16 22:31:51 by enogueir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../includes/builtins.h"
 #include "../../includes/minishell.h"
-#include "../../includes/expander.h"
-#include "../../libft/libft.h"
 
-int	builtin_echo(char **args, t_minishell *shell)
+int	process_flags(char **argv, int *i)
+{
+	int		new_line;
+	size_t	j;
+
+	new_line = 1;
+	while (argv[*i] && argv[*i][0] == '-' && argv[*i][1] == 'n')
+	{
+		j = 1;
+		while (argv[*i][j] == 'n')
+			j++;
+		if (argv[*i][j] != '\0')
+			break ;
+		new_line = 0;
+		(*i)++;
+	}
+	return (new_line);
+}
+
+int	builtin_echo(char **argv)
 {
 	int	i;
-	int	newline;
+	int	n_flag;
 
-	if (args[1] && ft_strcmp(args[1], "$?") == 0 && args[2] == NULL)
+	i = 0;
+	argv++;
+	n_flag = process_flags(argv, &i);
+	while (argv[i])
 	{
-		ft_putnbr_fd(shell->exit_status, 1);
+		ft_printf("%s", argv[i]);
+		if (argv[i + 1])
+			ft_printf(" ");
+		i++;
+	}
+	if (n_flag)
 		write(1, "\n", 1);
+	return (0);
+}
+
+int	builtin_pwd(void)
+{
+	char	buffer[4096];
+
+	if (getcwd(buffer, sizeof(buffer)))
+	{
+		printf("%s\n", buffer);
 		return (0);
 	}
-	i = 1;
-	newline = 1;
-	if (args[1] && !ft_strcmp(args[1], "-n"))
+	perror("pwd");
+	return (1);
+}
+
+int	builtin_env(t_envp *envp, size_t count)
+{
+	size_t	i;
+
+	i = 0;
+	while (i < count)
 	{
-		newline = 0;
+		if (envp[i].value)
+		{
+			printf("%s=%s\n", envp[i].key, envp[i].value);
+		}
 		i++;
 	}
-	while (args[i])
-	{
-		ft_putstr_fd(args[i], 1);
-		if (args[i + 1])
-			write(1, " ", 1);
-		i++;
-	}
-	if (newline)
-		write(1, "\n", 1);
 	return (0);
 }
-
-int	builtin_pwd(t_minishell *shell)
-{
-	char	*cwd;
-
-	cwd = getcwd(NULL, 0);
-	if (!cwd)
-	{
-		perror("minishell: pwd");
-		shell->exit_status = 1;
-		return (1);
-	}
-	ft_putendl_fd(cwd, 1);
-	update_env(shell, "PWD", cwd);
-	free(cwd);
-	shell->exit_status = 0;
-	return (0);
-}
-
-
-int builtin_env(t_minishell *shell)
-{
-    size_t i;
-
-    i = 0;
-    while (i < shell->env_count)
-    {
-        ft_putstr_fd(shell->envp[i].key, 1);
-        ft_putstr_fd("=", 1);
-        ft_putendl_fd(shell->envp[i].value, 1);
-        i++;
-    }
-    shell->exit_status = 0;
-    return (0);
-}
-

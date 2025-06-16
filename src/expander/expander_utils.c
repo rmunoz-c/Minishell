@@ -5,72 +5,90 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: enogueir <enogueir@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/04/03 17:28:45 by enogueir          #+#    #+#             */
-/*   Updated: 2025/05/28 18:05:27 by enogueir         ###   ########.fr       */
+/*   Created: 2025/06/05 18:43:44 by enogueir          #+#    #+#             */
+/*   Updated: 2025/06/12 21:32:08 by enogueir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../includes/expander.h"
-#include "../../includes/minishell.h"
-#include "../../libft/libft.h"
+#include "../includes/expander.h"
+#include "../includes/minishell.h"
 
-char	*expand_exit_status(t_minishell *shell)
+static char	*get_var_name(const char *str, size_t *i)
 {
-	return (ft_itoa(shell->exit_status));
+	size_t	start;
+
+	start = *i;
+	if (str[*i] == '?')
+	{
+		(*i)++;
+		return (ft_strdup("?"));
+	}
+	while (str[*i] && (ft_isalnum(str[*i]) || str[*i] == '_'))
+		(*i)++;
+	return (ft_substr(str, start, *i - start));
 }
 
-char	*expand_variable(const char *var)
+static char	*expand_variable(const char *name, t_minishell *shell)
 {
-	char	*value;
+	size_t		j;
+	size_t		len;
 
-	if (!var)
-		return (NULL);
-	value = getenv(var);
-	if (!value)
-		return (ft_strdup(""));
-	return (ft_strdup(value));
+	if (ft_strncmp(name, "?", 2) == 0)
+		return (ft_itoa(shell->exit_status));
+	len = ft_strlen(name);
+	j = 0;
+	while (j < shell->env_count)
+	{
+		if (ft_strncmp(shell->envp[j].key, name, len) == 0
+			&& shell->envp[j].key[len] == '\0')
+			return (ft_strdup(shell->envp[j].value));
+		j++;
+	}
+	return (ft_strdup(""));
 }
 
-int	append_char_to_result(char c, char **result)
+static void	expand_from_dollar(const char *str, size_t *i,
+	t_minishell *shell, char **result)
 {
-	char	buff[2];
-	char	*temp;
+	char	*var;
+	char	*tmp;
 
-	buff[0] = c;
-	buff[1] = '\0';
-	temp = ft_strjoin(*result, buff);
-	if (!temp)
-		return (0);
-	free(*result);
-	*result = temp;
-	return (1);
+	var = get_var_name(str, i);
+	tmp = expand_variable(var, shell);
+	free(var);
+	*result = ft_strjoinfree(*result, tmp);
+	free(tmp);
 }
 
-int	process_expansion(const char *str, size_t *pos, char **res,
-						t_minishell *shell)
+static void	append_raw_segment(const char *str, size_t *i, char **result)
 {
-	if (str[*pos] == '$' && str[*pos + 1])
-		return (expand_and_join(str, pos, res, shell));
-	if (!append_char_to_result(str[*pos], res))
-		return (0);
-	(*pos)++;
-	return (1);
+	size_t	start;
+	char	*tmp;
+
+	start = *i;
+	while (str[*i] && str[*i] != '$')
+		(*i)++;
+	tmp = ft_substr(str, start, *i - start);
+	*result = ft_strjoinfree(*result, tmp);
+	free(tmp);
 }
 
-int	expand_and_join(const char *str, size_t *pos, char **result,
-					t_minishell *shell)
+char	*expand_string(const char *str, t_minishell *shell)
 {
-	char	*temp;
-	char	*expanded;
+	size_t	i;
+	char	*result;
 
-	expanded = expand_dollar(str, pos, shell);
-	if (!expanded)
-		return (0);
-	temp = ft_strjoin(*result, expanded);
-	free(expanded);
-	if (!temp)
-		return (0);
-	free(*result);
-	*result = temp;
-	return (1);
+	i = 0;
+	result = ft_strdup("");
+	while (str[i])
+	{
+		if (str[i] == '$' && str[i + 1])
+		{
+			i++;
+			expand_from_dollar(str, &i, shell, &result);
+		}
+		else
+			append_raw_segment(str, &i, &result);
+	}
+	return (result);
 }

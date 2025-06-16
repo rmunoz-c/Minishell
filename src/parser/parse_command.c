@@ -5,76 +5,74 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: enogueir <enogueir@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/04/10 17:33:21 by enogueir          #+#    #+#             */
-/*   Updated: 2025/05/29 21:40:54 by enogueir         ###   ########.fr       */
+/*   Created: 2025/06/09 18:23:11 by enogueir          #+#    #+#             */
+/*   Updated: 2025/06/12 21:49:10 by enogueir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../includes/ast.h"
+#include "../../includes/minishell.h"
 #include "../../includes/parser.h"
-#include "../../includes/token_list.h"
-#include "../../includes/tokenizer.h"
-#include "../../libft/libft.h"
 
-static int	handle_redirect(t_token_list *list, size_t i, size_t end,
-		t_ast_node *cmd)
+static size_t	count_args(t_token_list *list, size_t start, size_t end)
 {
-	if ((i + 1) >= end || list->array[i + 1].type != TOKEN_WORD)
+	size_t	count;
+
+	count = 0;
+	while (start < end)
 	{
-		add_special_token(list, TOKEN_ERROR, "Syntax error near redirect", 27);
-		return (0);
+		if (list->array[start].type == TOKEN_WORD)
+			count++;
+		else if (list->array[start].type == TOKEN_REDIRECT_IN
+			|| list->array[start].type == TOKEN_REDIRECT_OUT
+			|| list->array[start].type == TOKEN_REDIRECT_IN_DBL
+			|| list->array[start].type == TOKEN_REDIRECT_OUT_DBL)
+			start++;
+		start++;
 	}
-	if (!add_redirection(cmd, list->array[i].type, list->array[i + 1].value))
-	{
-		add_special_token(list, TOKEN_ERROR, "Failed to add redirection", 26);
-		return (0);
-	}
-	return (1);
+	return (count);
 }
 
-static void	parse_redirections(t_token_list *list, size_t start, size_t end,
-		t_ast_node *cmd)
+static int	fill_args_and_redirs(t_ast_node *cmd, t_token_list *list,
+									size_t start, size_t end)
 {
-	size_t	i;
+	size_t	arg_i;
+	t_token	*tok;
 
-	i = start;
-	while (i < end)
+	arg_i = 0;
+	while (start < end)
 	{
-		if (list->array[i].type == TOKEN_REDIRECT_IN
-			|| list->array[i].type == TOKEN_REDIRECT_OUT
-			|| list->array[i].type == TOKEN_REDIRECT_IN_DBL
-			|| list->array[i].type == TOKEN_REDIRECT_OUT_DBL)
+		tok = &list->array[start];
+		if (tok->type == TOKEN_WORD)
+			cmd->args[arg_i++] = ft_strdup(tok->value);
+		else if (tok->type == TOKEN_REDIRECT_IN
+			|| tok->type == TOKEN_REDIRECT_OUT
+			|| tok->type == TOKEN_REDIRECT_IN_DBL
+			|| tok->type == TOKEN_REDIRECT_OUT_DBL)
 		{
-			if (!handle_redirect(list, i, end, cmd))
-				return ;
-			i += 2;
-			continue ;
+			if (start + 1 >= end || list->array[start + 1].type != TOKEN_WORD)
+				return (printf("minishell: syntax error in redirection\n"), 0);
+			if (!add_redirection(cmd, tok->type, list->array[start + 1].value,
+					list->array[start + 1].in_double_quote
+					|| list->array[start + 1].in_single_quote))
+				return (0);
+			start++;
 		}
-		i++;
+		start++;
 	}
+	return (cmd->args[arg_i] = NULL, 1);
 }
 
 t_ast_node	*parse_command(t_token_list *list, size_t start, size_t end)
 {
-	char		**args;
 	t_ast_node	*cmd;
+	size_t		arg_count;
 
-	// size_t i;
-	if (start >= end)
-		return (NULL);
-	args = collect_args(list, start, end);
-	if (!args)
-		return (NULL);
-	cmd = ast_node_create(NODE_COMMAND, args);
-	// i = 0;
-	// while (args[i])
-	// {
-	// 	free(args[i]);
-	// 	i++;
-	// }
-	// free(args);
-	if (!cmd)
-		return (NULL);
-	parse_redirections(list, start, end, cmd);
+	arg_count = count_args(list, start, end);
+	cmd = ast_node_create(NODE_COMMAND,
+			malloc(sizeof(char *) * (arg_count + 1)));
+	if (!cmd || !cmd->args)
+		return (ast_node_free(cmd), NULL);
+	if (!fill_args_and_redirs(cmd, list, start, end))
+		return (ast_node_free(cmd), NULL);
 	return (cmd);
 }

@@ -5,159 +5,76 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: enogueir <enogueir@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/05/08 19:35:02 by enogueir          #+#    #+#             */
-/*   Updated: 2025/05/28 18:11:31 by enogueir         ###   ########.fr       */
+/*   Created: 2025/06/12 19:40:01 by enogueir          #+#    #+#             */
+/*   Updated: 2025/06/12 21:19:59 by enogueir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../includes/builtins.h"
-#include "../../libft/libft.h"
+#include "../../includes/minishell.h"
 
-t_envp	*envp_struct_realloc_with(t_envp *env, size_t *env_count,
-		const char *key, const char *value)
+static char	*get_env_value(t_envp *envp, size_t count, const char *key)
 {
 	size_t	i;
-	t_envp	*new_env;
 
 	i = 0;
-	while (i < *env_count)
+	while (i < count)
+	{
+		if (!ft_strcmp(envp[i].key, key))
+			return (envp[i].value);
 		i++;
-	new_env = malloc(sizeof(t_envp) * (i + 2));
-	if (!new_env)
-		return (NULL);
+	}
+	return (NULL);
+}
+
+static void	update_env_var(t_envp *envp, size_t count,
+		const char *key, const char *new_value)
+{
+	size_t	i;
+
 	i = 0;
-	while (i < *env_count)
+	while (i < count)
 	{
-		new_env[i] = env[i];
-		i++;
-	}
-	new_env[i].key = ft_strdup(key);
-	new_env[i].value = ft_strdup(value);
-	i++;
-	new_env[i].key = NULL;
-	new_env[i].value = NULL;
-	free(env);
-	*env_count = i;
-	return (new_env);
-}
-
-t_envp	*envp_struct_remove(t_envp *env, size_t *count, const char *key)
-{
-	size_t	i;
-	size_t	j;
-	t_envp	*new_env;
-
-	new_env = malloc(sizeof(t_envp) * (*count + 1));
-	if (!new_env)
-		return (env);
-	i = 0;
-	j = 0;
-	while (i < *count)
-	{
-		if (ft_strcmp(env[i].key, (char *)key) != 0)
-			new_env[j++] = env[i];
-		else
+		if (!ft_strcmp(envp[i].key, key))
 		{
-			free(env[i].key);
-			free(env[i].value);
+			free(envp[i].value);
+			envp[i].value = ft_strdup(new_value);
+			return ;
 		}
 		i++;
 	}
-	new_env[j].key = NULL;
-	new_env[j].value = NULL;
-	*count = j;
-	free(env);
-	return (new_env);
 }
 
-static int	is_valid_identifier(const char *key)
+static void	print_cd_error(const char *arg)
 {
-	size_t	j;
-
-	j = 0;
-	if (!(ft_isalpha(key[j]) || key[j] == '_'))
-		return (0);
-	j++;
-	while (key[j] && key[j] != '=')
-	{
-		if (!(ft_isalnum(key[j]) || key[j] == '_'))
-			return (0);
-		j++;
-	}
-	return (1);
+	ft_putstr_fd("minishell: cd: ", 2);
+	if (arg)
+		ft_putstr_fd(arg, 2);
+	else
+		ft_putstr_fd("HOME", 2);
+	perror(": ");
 }
 
-int	builtin_export(char **args, t_minishell *shell)
+int	builtin_cd(char **argv, t_minishell *shell)
 {
-	size_t	i;
-	char	*eq;
-	char	*key;
-	char	*value;
+	const char	*target;
+	char		*oldpwd;
+	char		cwd[4096];
 
-	if (!args[1])
+	oldpwd = getcwd(NULL, 0);
+	if (!argv[1])
+		target = get_env_value(shell->envp, shell->env_count, "HOME");
+	else
+		target = argv[1];
+	if (!target || chdir(target) != 0)
 	{
-		i = 0;
-		while (i < shell->env_count)
-		{
-			ft_putstr_fd("declare -x ", 1);
-			ft_putstr_fd(shell->envp[i].key, 1);
-			ft_putstr_fd("=", 1);
-			ft_putendl_fd(shell->envp[i].value, 1);
-			i++;
-		}
-		shell->exit_status = 0;
-		return (0);
+		print_cd_error(argv[1]);
+		free(oldpwd);
+		return (1);
 	}
-	i = 1;
-	while (args[i])
-	{
-		eq = ft_strchr(args[i], '=');
-		if (eq)
-		{
-			key = ft_substr(args[i], 0, (size_t)(eq - args[i]));
-			value = ft_strdup(eq + 1);
-		}
-		else
-		{
-			key = ft_strdup(args[i]);
-			value = ft_strdup("");
-		}
-		if (!is_valid_identifier(key))
-		{
-			ft_putstr_fd("minishell: export: `", 2);
-			ft_putstr_fd(args[i], 2);
-			ft_putendl_fd("': not a valid identifier", 2);
-			free(key);
-			free(value);
-			shell->exit_status = 1;
-			return (1);
-		}
-		shell->envp = envp_struct_realloc_with(shell->envp, &shell->env_count,
-				key, value);
-		free(key);
-		free(value);
-		if (!shell->envp)
-		{
-			shell->exit_status = 1;
-			return (1);
-		}
-		i++;
-	}
-	shell->exit_status = 0;
-	return (0);
-}
-
-int	builtin_unset(char **args, t_minishell *shell)
-{
-	size_t	i;
-
-	i = 1;
-	while (args[i])
-	{
-		shell->envp = envp_struct_remove(shell->envp, &shell->env_count,
-				args[i]);
-		i++;
-	}
-    shell->exit_status = 0;
+	if (oldpwd)
+		update_env_var(shell->envp, shell->env_count, "OLDPWD", oldpwd);
+	if (getcwd(cwd, sizeof(cwd)))
+		update_env_var(shell->envp, shell->env_count, "PWD", cwd);
+	free(oldpwd);
 	return (0);
 }

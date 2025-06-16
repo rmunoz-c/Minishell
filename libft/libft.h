@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   libft.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rmunoz-c <rmunoz-c@student.42madrid>       +#+  +:+       +#+        */
+/*   By: enogueir <enogueir@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/18 14:11:50 by rmunoz-c          #+#    #+#             */
-/*   Updated: 2024/10/31 17:04:12 by rmunoz-c         ###   ########.fr       */
+/*   Updated: 2025/06/12 21:24:05 by enogueir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ size_t	ft_strlen(const char *s);
 void	*ft_memset(void *s, int c, size_t n);
 void	ft_bzero(void *s, size_t n);
 void	ft_putchar_fd(char c, int fd);
-void	ft_putstr_fd(char *s, int fd);
+void	ft_putstr_fd(const char *s, int fd);
 void	*ft_memmove(void *dest, const void *src, size_t n);
 void	*ft_memcpy(void *dest, const void *src, size_t n);
 size_t	ft_strlcpy(char *dst, const char *src, size_t size);
@@ -72,7 +72,7 @@ void	ft_error(char *msg, t_bool b);
 long	ft_atoll(const char *nptr);
 void	ft_free_array(char **array);
 int		ft_arraylen(char **a);
-int		ft_strcmp(char *s1, char *s2);
+int		ft_strcmp(const char *s1, const char *s2);
 void	ft_quicksort(int *array, int low, int high);
 int		ft_index(int n, int *array);
 char	*ft_strjoinfree(char *s1, char *s2);

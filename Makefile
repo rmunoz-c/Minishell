@@ -12,31 +12,37 @@ IFLAGS := -Iincludes -Ilibft
 LFLAGS := -Llibft -lft -lreadline
 
 # Rutas de fuentes y objetos
-SRC :=	src/ast/ast_node_free.c \
-		src/ast/ast_utils.c \
-		src/ast/ast.c \
+SRC :=	src/ast/ast.c \
 		src/builtins/builtin_basic.c \
 		src/builtins/builtin_envmod.c \
-		src/builtins/builtin_shellctl.c \
-		src/builtins/builtins_utils.c \
-		src/exec/execute_external.c \
+		src/builtins/builtin_exit.c \
+		src/builtins/builtin_export_utils.c \
+		src/builtins/builtin_export.c \
+		src/builtins/builtin_unset.c \
+		src/env/env_utils.c \
+		src/exec/execute_builtin.c \
 		src/exec/execute_node.c \
+		src/exec/execute_pipe.c \
+		src/exec/execute_utils.c \
 		src/exec/external_utils.c \
-		src/exec/heredoc.c \
+		src/exec/read_heredoc.c \
+		src/exec/setup_redirections.c \
 		src/expander/expander_build.c \
 		src/expander/expander_utils.c \
 		src/expander/expander.c \
-		src/parser/parse_args.c \
+		src/lexer/token_list.c \
+		src/lexer/tokenizer_assign.c \
+		src/lexer/tokenizer_utils.c \
+		src/lexer/tokenizer.c \
 		src/parser/parse_command.c \
 		src/parser/parse_input.c \
-		src/parser/parse_utils.c \
-		src/tokenizer/quote_handler.c \
-		src/tokenizer/tokenizer_utils.c \
-		src/tokenizer/tokenizer.c \
-		src/env_utils.c \
+		src/parser/parse_pipeline.c \
+		src/parser/validate_syntax.c \
+		src/signals/signal.c \
 		src/free.c \
+		src/initialize_shell.c \
 		src/main.c \
-		src/token_list.c \
+		src/shell_loop.c \
 
 BUILD_DIR := build
 OBJ := $(SRC:.c=.o)
@@ -92,4 +98,5 @@ norm:
 # Incluir dependencias automáticas
 -include $(DEP)
 
-.PHONY: all clean fclean re norm run
+
+.PHONY: all clean fclean re norm run test

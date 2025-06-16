@@ -6,7 +6,7 @@
 /*   By: enogueir <enogueir@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/08 19:31:21 by enogueir          #+#    #+#             */
-/*   Updated: 2025/05/28 19:07:45 by enogueir         ###   ########.fr       */
+/*   Updated: 2025/06/16 19:05:05 by enogueir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,22 +15,28 @@
 
 # include "minishell.h"
 
-int		is_builtin(char *cmd);
-int		execute_builtin(char **args, t_minishell *shell);
+/*builtin_basic.c*/
+int		builtin_echo(char **argv);
+int		builtin_pwd(void);
+int		builtin_env(t_envp *envp, size_t count);
 
-t_envp	*envp_struct_realloc_with(t_envp *env, size_t *env_count, 
-            const char *key, const char *value);
-void	update_env(t_minishell *shell, const char *key, const char *value);
+/*builtin_envmod.c*/
+int		builtin_cd(char **argv, t_minishell *shell);
 
+/*builtin_exit.c*/
+int		builtin_exit(char **argv, t_minishell *shell);
 
-int     builtin_echo(char **args, t_minishell *shell);
-int	    builtin_pwd(t_minishell *shell);
-int 	builtin_env(t_minishell *shell);
-int	    builtin_cd(char **args, t_minishell *shell);
-int		builtin_export(char **args, t_minishell *shell);
+/*builtin_export_utils.c*/
+int		export_update_existing(const char *arg, char *equal, size_t len,
+			t_minishell *sh);
+void	export_add_new(const char *arg, char *equal, size_t len,
+			t_minishell *sh);
+void	export_one(const char *arg, t_minishell *sh);
+
+/*builtin_export.c*/
+int		builtin_export(char **argv, t_minishell *sh);
+
+/*builtin_unset.c*/
 int		builtin_unset(char **args, t_minishell *shell);
-int	    builtin_exit(char **args, t_minishell *shell);
-
-t_envp	*dup_envp_struct(char **envp, size_t *out_count);
 
 #endif

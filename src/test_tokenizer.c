@@ -5,284 +5,134 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: enogueir <enogueir@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/03/27 19:18:59 by enogueir          #+#    #+#             */
-/*   Updated: 2025/05/08 22:42:41 by enogueir         ###   ########.fr       */
+/*   Created: 2025/06/05 18:18:46 by enogueir          #+#    #+#             */
+/*   Updated: 2025/06/12 18:11:19 by enogueir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/ast.h"
-#include "../includes/execute.h"
-#include "../includes/expander.h"
 #include "../includes/minishell.h"
-#include "../includes/parser.h"
-#include "../includes/token_list.h"
 #include "../includes/tokenizer.h"
-#include "../libft/libft.h"
-#include <readline/history.h>
-#include <readline/readline.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
+#include "../includes/expander.h"
+#include "../includes/parser.h"
+#include "../includes/execute.h"
 
+static const char *token_type_str[] = {
+	[TOKEN_WORD] = "WORD",
+	[TOKEN_PIPE] = "PIPE",
+	[TOKEN_REDIRECT_IN] = "<",
+	[TOKEN_REDIRECT_OUT] = ">",
+	[TOKEN_REDIRECT_IN_DBL] = "<<",
+	[TOKEN_REDIRECT_OUT_DBL] = ">>",
+	[TOKEN_ERROR] = "ERROR",
+	[TOKEN_EOF] = "EOF"
+};
 
-// void log_error_to_history(const char *error_message) {
-//     FILE *history_file = fopen("history.txt", "a");
-//     if (history_file == NULL) {
-//         perror("Error abriendo el archivo de historial");
-//         return;
-//     }
-
-//     // Añadir la línea de separación para un nuevo error
-//     fprintf(history_file, "----------------------------\n");
-
-//     // Registrar el mensaje de error
-//     fprintf(history_file, "ERROR: %s\n", error_message);
-
-//     // Registrar la fecha y hora del error
-//     time_t rawtime;
-//     struct tm *timeinfo;
-//     char time_str[100];
-
-//     time(&rawtime);
-//     timeinfo = localtime(&rawtime);
-//     strftime(time_str, sizeof(time_str), "%Y-%m-%d %H:%M:%S", timeinfo);
-
-//     fprintf(history_file, "Fecha y hora: %s\n", time_str);
-
-//     fclose(history_file);
-// }
-
-// void handle_error(int sig) {
-//     const char *error_message = NULL;
-
-//     // Identificar el tipo de señal
-//     switch (sig) {
-//         case SIGSEGV:
-//             error_message = "Segmentation fault (SIGSEGV) detected.";
-//             break;
-//         case SIGFPE:
-//             error_message = "Floating point exception (SIGFPE) detected.";
-//             break;
-//         case SIGILL:
-//             error_message = "Illegal instruction (SIGILL) detected.";
-//             break;
-//         case SIGABRT:
-//             error_message = "Aborted (SIGABRT) detected.";
-//             break;
-//         default:
-//             error_message = "Unknown error detected.";
-//             break;
-//     }
-
-//     // Loggear el error y mostrarlo en la terminal
-//     log_error_to_history(error_message);
-//     fprintf(stderr, "ERROR: %s\n", error_message);
-
-//     // Terminar el programa
-//     exit(1);
-// }
-
-// void append_command_with_output_to_history(const char *command, const char *output) {
-//     FILE *history_file = fopen("history.txt", "a");  // Abre el archivo en modo append
-//     if (history_file == NULL) {
-//         perror("Error abriendo el archivo de historial");
-//         return;
-//     }
-
-//     fprintf(history_file, "Comando: %s\n", command);  // Escribe el comando en el archivo
-//     fprintf(history_file, "Salida: %s\n\n", output);  // Escribe la salida del comando
-//   	fprintf(history_file, "__________________________________________\n\n");
-// 	fclose(history_file);
-// }
-
-// static	void add_separator_to_history() {
-//     FILE *history_file = fopen("history.txt", "a");
-//     if (history_file == NULL) {
-//         perror("Error abriendo el archivo de historial");
-//         return;
-//     }
-//     // Agregar la línea de separación al inicio de una nueva ejecución de minishell
-//     fprintf(history_file, "----------------------------\n\n");
-//     fclose(history_file);
-// }
-
-// void capture_and_save_output(const char *command, t_minishell *shell) {
-//     int pipefd[2];
-//     pid_t pid;
-//     char output[1024];
-
-//     if (pipe(pipefd) == -1) {
-//         perror("Error al crear pipe");
-//         return;
-//     }
-
-//     pid = fork();
-//     if (pid == -1) {
-//         perror("Error al crear proceso hijo");
-//         return;
-//     }
-
-//     if (pid == 0) {
-//         // Redirigir la salida estándar y la de error al pipe
-//         close(pipefd[0]);
-//         dup2(pipefd[1], STDOUT_FILENO);  // Redirigir stdout
-//         dup2(pipefd[1], STDERR_FILENO);  // Redirigir stderr
-
-//         // Ejecutar el comando real con execute_node
-//         t_token_list list;
-//         token_list_init(&list);
-//         tokenize_input(command, &list);  // Tokenizar el comando
-//         expand_token_list(&list);  // Expansión de la lista de tokens
-//         t_ast_node *ast = parse_input(&list);  // Parsear el comando
-
-//         if (ast) {
-//             execute_node(ast, shell);  // Ejecutar el comando real con execute_node
-//             ast_node_free(ast);
-//         }
-
-//         close(pipefd[1]);
-//         exit(0);
-//     } else {
-//         // En el proceso padre
-//         close(pipefd[1]);
-//         ssize_t bytes_read = read(pipefd[0], output, sizeof(output) - 1);
-//         if (bytes_read > 0) {
-//             output[bytes_read] = '\0';  // Null-terminar la salida leída
-//             // Guardar el comando y su salida en el archivo de historial
-//             append_command_with_output_to_history(command, output);
-//         }
-//         close(pipefd[0]);
-
-//         // Esperar a que el hijo termine
-//         wait(NULL);
-//     }
-// }
-
-
-static void	print_redirs(t_redir *redirs, size_t count)
+static void	print_tokens(t_token_list *list)
 {
-	size_t	i;
-
-	i = 0;
-	while (i < count)
+	size_t	i = 0;
+	while (i < list->size)
 	{
-		if (redirs[i].type == TOKEN_REDIRECT_IN)
-			printf("( < %s ) ", redirs[i].filename);
-		else if (redirs[i].type == TOKEN_REDIRECT_OUT)
-			printf("( > %s ) ", redirs[i].filename);
-		else if (redirs[i].type == TOKEN_REDIRECT_OUT_DBL)
-			printf("( >> %s ) ", redirs[i].filename);
-		else if (redirs[i].type == TOKEN_REDIRECT_IN_DBL)
-			printf("( << %s ) ", redirs[i].filename);
+		printf("[%s] \"%s\" (len: %zu, sq: %d, dq: %d)\n",
+			token_type_str[list->array[i].type],
+			list->array[i].value,
+			list->array[i].length,
+			list->array[i].in_single_quote,
+			list->array[i].in_double_quote);
 		i++;
 	}
 }
 
-static void	print_node(t_ast_node *node)
+static void	print_indent(int depth)
 {
-	size_t	i;
+	while (depth-- > 0)
+		printf("  ");
+}
+
+static void	print_redirs(t_ast_node *node, int depth)
+{
+	size_t	i = 0;
+	while (i < node->redir_count)
+	{
+		print_indent(depth);
+		printf("redir: ");
+		if (node->redirs[i].type == TOKEN_REDIRECT_IN)
+			printf("< ");
+		else if (node->redirs[i].type == TOKEN_REDIRECT_OUT)
+			printf("> ");
+		else if (node->redirs[i].type == TOKEN_REDIRECT_IN_DBL)
+			printf("<< ");
+		else if (node->redirs[i].type == TOKEN_REDIRECT_OUT_DBL)
+			printf(">> ");
+		printf("%s\n", node->redirs[i].filename);
+		i++;
+	}
+}
+
+static void	print_ast(t_ast_node *node, int depth)
+{
+	int		i;
 
 	if (!node)
 		return ;
-	if (node->type == NODE_COMMAND)
+	print_indent(depth);
+	if (node->type == NODE_PIPE)
+		printf("PIPE\n");
+	else if (node->type == NODE_COMMAND)
 	{
-		print_redirs(node->redirs, node->redir_count);
-		printf("{ ");
+		printf("CMD:");
 		i = 0;
 		while (node->args && node->args[i])
-		{
-			printf("%s ", node->args[i]);
-			i++;
-		}
-		printf("}");
+			printf(" %s", node->args[i++]);
+		printf("\n");
+		print_redirs(node, depth + 1);
 	}
-	else if (node->type == NODE_PIPE)
-	{
-		print_node(node->left);
-		printf("\n|\n");
-		print_node(node->right);
-	}
+	print_ast(node->left, depth + 1);
+	print_ast(node->right, depth + 1);
 }
 
-int main(int argc, char **argv, char **envp)
+int	main(int argc, char **argv, char **envp)
 {
-    char            *line;
-    t_token_list    list;
-    t_ast_node      *ast;
-    t_minishell     shell;
+	t_minishell	shell;
+	t_token_list	list;
+	t_ast_node	*ast;
+	char		*line;
 
-    (void)argc;
-    (void)argv;
-    shell.envp = envp;
-
-    // Registrar el manejador de señales para diferentes errores
-    // signal(SIGSEGV, handle_error);  // Segmentation fault
-    // signal(SIGFPE, handle_error);   // Floating point exception
-    // signal(SIGILL, handle_error);   // Illegal instruction
-    // signal(SIGABRT, handle_error);  // Abort
-
-    // Añadir la separación al historial solo una vez al principio de la ejecución
-    // add_separator_to_history();
-
-    while (1)
-    {
-        line = readline("PuenteCuatroShell > ");
-        if (!line)
-            break ;
-
-        // Añadir el comando al historial de readline
-        add_history(line);
-
-        // // Capturar y guardar la salida del comando en el historial
-        // capture_and_save_output(line, &shell);  // Captura y guarda la salida real
-
-        token_list_init(&list);
-        tokenize_input(line, &list);
-        expand_token_list(&list);
-        ast = parse_input(&list);
-
-       if (ast)
-        {
-            print_node(ast);
-            printf("\n");
-            process_heredocs(ast);
-            execute_node(ast, &shell);
-            ast_node_free(ast);
-        }
-        token_list_free(&list);
-        free(line);
-    }
-    return (0);
-}
-
-
-
-
-/*(int	main(void)
-{
-	t_token	*tokens;
-	size_t	token_count;
-	size_t	i;
-	char	*input;
-
+	(void)argc;
+	(void)argv;
+	shell.envp = dup_envp_struct(envp, &shell.env_count);
+	shell.exit_status = 0;
 	while (1)
 	{
-		input = readline("PuenteCuatroShell > ");
-		add_history(input);
-		tokens = tokenize(input, &token_count);
-		if (!tokens)
-			return (printf("Error en el tokenizador\n"), 1);
-		i = 0;
-		while (i < token_count && tokens[i]->type != TOKEN_EOF)
+		line = readline("minishell_test > ");
+		if (!line)
+			break;
+		if (*line)
+			add_history(line);
+		token_list_init(&list);
+		tokenize_input(line, &list);
+		expand_token_list(&list, &shell);
+		printf("TOKENS:\n");
+		print_tokens(&list);
+		ast = parse_input(&list);
+		if (!ast)
+			printf("Error: parser returned NULL\n");
+		else
 		{
-			printf("Token [%s], Tipo: %d, Longitud: %zu\n", tokens[i]->value,
-				tokens[i]->type, tokens[i]->length);
-			i++;
+			printf("\nAST:\n");
+			print_ast(ast, 0);
+			if (process_heredocs(ast, &shell) < 0)
+			{
+				ast_node_free(ast);
+				token_list_free(&list);
+				free(line);
+				continue;
+			}
+			execute_node(ast, &shell);
+			ast_node_free(ast);
 		}
-		free_tokens(tokens, token_count);
-		free(input);
+		token_list_free(&list);
+		free(line);
 	}
+	free_envp(shell.envp, shell.env_count);
 	return (0);
-}*/
-
-// input = "echo hola $USER que tal estas? "$HOME" d $PWD";
+}

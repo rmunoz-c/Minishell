@@ -5,59 +5,56 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: enogueir <enogueir@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/03/13 19:52:30 by enogueir          #+#    #+#             */
-/*   Updated: 2025/05/28 19:16:01 by enogueir         ###   ########.fr       */
+/*   Created: 2025/06/13 17:11:19 by enogueir          #+#    #+#             */
+/*   Updated: 2025/06/16 22:30:14 by enogueir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "../includes/ast.h"
+#include "../includes/minishell.h"
 #include "../includes/token_list.h"
-#include "../libft/libft.h"
 
-void	free_tokens(t_token_list *list)
+int	is_line_empty(const char *s)
 {
-	size_t	i;
+	int	i;
+	int	whitespace_count;
 
+	if (!s || s[0] == '\0')
+		return (1);
 	i = 0;
-	while (i < list->size)
+	whitespace_count = 0;
+	while (s[i])
 	{
-		free(list->array[i].value);
+		if (s[i] == ' ' || s[i] == '\t' || s[i] == '\n' || s[i] == '\v'
+			|| s[i] == '\f' || s[i] == '\r')
+			whitespace_count++;
 		i++;
 	}
-	free(list->array);
-	list->array = NULL;
-	list->size = 0;
-	list->capacity = 0;
+	return (whitespace_count == i);
 }
 
-void	free_envp(t_envp *envp, size_t count)
+void	free_ast(t_ast_node *ast)
 {
-	size_t	i;
-
-	i = 0;
-	while (i < count)
-	{
-		free(envp[i].key);
-		free(envp[i].value);
-		i++;
-	}
-	free(envp);
+	if (ast)
+		ast_node_free(ast);
 }
 
-void	free_all(t_minishell *data)
+int	free_and_return(t_ast_node *ast, t_token_list *list)
 {
-	free_tokens(data->tokens);
-	free_envp(data->envp, data->env_count);
+	if (ast)
+		free_ast(ast);
+	token_list_free(list);
+	return (0);
 }
 
-void	free_flat_env(char **env)
+void	free_all(t_minishell *shell)
 {
-	size_t	i;
-
-	i = 0;
-	while (env[i])
-	{
-		free(env[i]);
-		i++;
-	}
-	free(env);
+	if (!shell)
+		return ;
+	if (shell->tokens)
+		token_list_free(shell->tokens);
+	if (shell->envp)
+		free_envp(shell->envp, shell->env_count);
+	clear_history();
+	free(shell);
 }

@@ -5,14 +5,13 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: enogueir <enogueir@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/03/27 19:08:27 by enogueir          #+#    #+#             */
-/*   Updated: 2025/05/29 21:29:44 by enogueir         ###   ########.fr       */
+/*   Created: 2025/06/05 18:14:26 by enogueir          #+#    #+#             */
+/*   Updated: 2025/06/12 21:39:20 by enogueir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/minishell.h"
 #include "../includes/token_list.h"
-#include "../libft/libft.h"
+#include "../includes/minishell.h"
 
 void	token_list_init(t_token_list *list)
 {
@@ -37,44 +36,75 @@ void	token_list_free(t_token_list *list)
 	list->capacity = 0;
 }
 
-static int	token_list_resize(t_token_list *list)
+int	token_list_add_token(t_token_list *list, t_token *token)
 {
 	t_token	*new_array;
 	size_t	i;
-	size_t	new_capacity;
 
-	if (list->capacity == 0)
-		new_capacity = 8;
-	else
-		new_capacity = list->capacity * 2;
-	new_array = malloc(sizeof(t_token) * new_capacity);
+	if (list->size >= list->capacity)
+	{
+		list->capacity = (list->capacity + 1) * 2;
+		new_array = malloc(sizeof(t_token) * list->capacity);
+		if (!new_array)
+			return (0);
+		i = 0;
+		while (i < list->size)
+		{
+			new_array[i] = list->array[i];
+			i++;
+		}
+		free(list->array);
+		list->array = new_array;
+	}
+	list->array[list->size] = *token;
+	list->size++;
+	return (1);
+}
+
+static int	insert_and_expand(t_token_list *list, size_t index, t_token token)
+{
+	t_token	*new_array;
+	size_t	i;
+
+	list->capacity = (list->capacity + 1) * 2;
+	new_array = malloc(sizeof(t_token) * list->capacity);
 	if (!new_array)
 		return (0);
 	i = 0;
-	while (i < list->size)
+	while (i < index)
 	{
 		new_array[i] = list->array[i];
 		i++;
 	}
+	new_array[i] = token;
+	while (i < list->size)
+	{
+		new_array[i + 1] = list->array[i];
+		i++;
+	}
 	free(list->array);
 	list->array = new_array;
-	list->capacity = new_capacity;
 	return (1);
 }
 
-int	token_list_add_token(t_token_list *list, t_token *token)
+void	token_list_insert(t_token_list *list, size_t index, t_token token)
 {
+	size_t	i;
+
 	if (list->size >= list->capacity)
 	{
-		if (!token_list_resize(list))
-			return (0);
+		if (!insert_and_expand(list, index, token))
+			return ;
 	}
-	list->array[list->size].type = token->type;
-	list->array[list->size].value = ft_strdup(token->value);
-	if (!list->array[list->size].value)
-		return (0);
-	list->array[list->size].length = token->length;
-	list->array[list->size].in_single_quote = token->in_single_quote;
+	else
+	{
+		i = list->size;
+		while (i > index)
+		{
+			list->array[i] = list->array[i - 1];
+			i--;
+		}
+		list->array[index] = token;
+	}
 	list->size++;
-	return (1);
 }
