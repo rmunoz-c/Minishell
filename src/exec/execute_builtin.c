@@ -6,7 +6,7 @@
 /*   By: enogueir <enogueir@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 17:55:06 by enogueir          #+#    #+#             */
-/*   Updated: 2025/06/16 20:21:11 by enogueir         ###   ########.fr       */
+/*   Updated: 2025/06/17 22:05:05 by enogueir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ int	execute_builtin(t_ast_node *node, t_minishell *shell)
 	if (!strcmp(cmd, "env"))
 		return (builtin_env(shell->envp, shell->env_count));
 	if (!strcmp(cmd, "exit"))
-		return (builtin_exit(node->args, shell));
+		return (builtin_exit(node, shell));
 	if (!strcmp(cmd, "cd"))
 		return (builtin_cd(node->args, shell));
 	if (!strcmp(cmd, "export"))

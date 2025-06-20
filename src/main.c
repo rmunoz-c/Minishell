@@ -6,7 +6,7 @@
 /*   By: enogueir <enogueir@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/05 18:18:46 by enogueir          #+#    #+#             */
-/*   Updated: 2025/06/16 20:29:29 by enogueir         ###   ########.fr       */
+/*   Updated: 2025/06/20 20:21:47 by enogueir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,9 @@ int	main(int argc, char **argv, char **envp)
 		return (1);
 	setup_signals();
 	run_shell_loop(shell);
-	free_all(shell);
-	return (shell->exit_status);
+	if (shell->envp)
+		free_envp(shell->envp, shell->env_count);
+	rl_clear_history();
+	free(shell);
+	return (0);
 }

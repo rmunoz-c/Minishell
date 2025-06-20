@@ -6,7 +6,7 @@
 /*   By: enogueir <enogueir@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/11 18:22:09 by enogueir          #+#    #+#             */
-/*   Updated: 2025/06/16 23:24:45 by enogueir         ###   ########.fr       */
+/*   Updated: 2025/06/20 20:27:42 by enogueir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,12 @@ static void	fork_and_exec(t_ast_node *node, t_minishell *shell)
 	char	*cmd_path;
 
 	if (setup_redirections(node) < 0)
+	{
+		free_all(shell);
+		free(shell);
+		free_ast(node);
 		exit(1);
+	}
 	flat_env = flatten_envp(shell->envp, shell->env_count);
 	cmd_path = resolve_cmd_path(node, flat_env);
 	if (!cmd_path)
@@ -29,12 +34,12 @@ static void	fork_and_exec(t_ast_node *node, t_minishell *shell)
 		ft_putstr_fd(node->args[0], 2);
 		ft_putstr_fd(": command not found\n", 2);
 		free_flat_env(flat_env);
+		(free_all(shell), free(shell), free_ast(node));
 		exit(127);
 	}
 	execve(cmd_path, node->args, flat_env);
-	perror("execve");
-	free(cmd_path);
-	free_flat_env(flat_env);
+	(perror("execve"), free(cmd_path), free_flat_env(flat_env));
+	(free_ast(node), free_all(shell));
 	exit(127);
 }
 
@@ -53,7 +58,7 @@ static int	exec_external_command(t_ast_node *node, t_minishell *shell)
 	return (shell->exit_status);
 }
 
-static int	exec_builtin_with_redir(t_ast_node *node, t_minishell *shell)
+int	exec_builtin_with_redir(t_ast_node *node, t_minishell *shell)
 {
 	int	save_in;
 	int	save_out;

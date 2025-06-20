@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   env_utils.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: enogueir <enogueir@student.42madrid>       +#+  +:+       +#+        */
+/*   By: enogueir <enogueir@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/05 19:09:43 by enogueir          #+#    #+#             */
-/*   Updated: 2025/06/13 18:38:00 by enogueir         ###   ########.fr       */
+/*   Updated: 2025/06/20 20:28:57 by enogueir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,6 +85,8 @@ int	remove_envp_entry(t_minishell *shell, const char *key)
 				j++;
 			}
 			shell->env_count--;
+			shell->envp[shell->env_count].key = NULL;
+			shell->envp[shell->env_count].value = NULL;
 			return (0);
 		}
 		i++;

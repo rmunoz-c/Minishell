@@ -6,7 +6,7 @@
 /*   By: enogueir <enogueir@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/13 17:11:19 by enogueir          #+#    #+#             */
-/*   Updated: 2025/06/16 22:30:14 by enogueir         ###   ########.fr       */
+/*   Updated: 2025/06/20 20:32:41 by enogueir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,12 +39,12 @@ void	free_ast(t_ast_node *ast)
 		ast_node_free(ast);
 }
 
-int	free_and_return(t_ast_node *ast, t_token_list *list)
+void	free_and_return(t_ast_node *ast, t_token_list *list)
 {
 	if (ast)
 		free_ast(ast);
 	token_list_free(list);
-	return (0);
+	return ;
 }
 
 void	free_all(t_minishell *shell)
@@ -55,6 +55,5 @@ void	free_all(t_minishell *shell)
 		token_list_free(shell->tokens);
 	if (shell->envp)
 		free_envp(shell->envp, shell->env_count);
-	clear_history();
-	free(shell);
+	rl_clear_history();
 }

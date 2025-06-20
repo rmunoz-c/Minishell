@@ -6,7 +6,7 @@
 /*   By: enogueir <enogueir@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/05 18:43:44 by enogueir          #+#    #+#             */
-/*   Updated: 2025/06/12 21:32:08 by enogueir         ###   ########.fr       */
+/*   Updated: 2025/06/20 20:26:48 by enogueir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,13 +64,19 @@ static void	append_raw_segment(const char *str, size_t *i, char **result)
 {
 	size_t	start;
 	char	*tmp;
+	char	*joined;
 
+	if (!*result)
+		*result = ft_strdup("");
 	start = *i;
 	while (str[*i] && str[*i] != '$')
 		(*i)++;
 	tmp = ft_substr(str, start, *i - start);
-	*result = ft_strjoinfree(*result, tmp);
+	if (!tmp)
+		return ;
+	joined = ft_strjoinfree(*result, tmp);
 	free(tmp);
+	*result = joined;
 }
 
 char	*expand_string(const char *str, t_minishell *shell)
@@ -79,7 +85,7 @@ char	*expand_string(const char *str, t_minishell *shell)
 	char	*result;
 
 	i = 0;
-	result = ft_strdup("");
+	result = NULL;
 	while (str[i])
 	{
 		if (str[i] == '$' && str[i + 1])

@@ -6,7 +6,7 @@
 /*   By: enogueir <enogueir@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/16 19:27:45 by enogueir          #+#    #+#             */
-/*   Updated: 2025/06/16 23:23:33 by enogueir         ###   ########.fr       */
+/*   Updated: 2025/06/20 20:31:28 by enogueir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,10 +55,14 @@ static int	process_raw_line(char **raw_line)
 static void	execute_command(t_minishell *shell, t_ast_node *ast)
 {
 	g_interactive = 0;
-	if (ast && ast->type == NODE_COMMAND
-		&& ast->args && ast->args[0]
+	if (ast && ast->type == NODE_COMMAND && ast->args && ast->args[0]
 		&& is_builtin(ast->args[0]))
-		execute_builtin(ast, shell);
+	{
+		if (ast->redir_count > 0)
+			exec_builtin_with_redir(ast, shell);
+		else
+			execute_builtin(ast, shell);
+	}
 	else if (ast)
 		execute_node(ast, shell);
 	g_interactive = 1;
@@ -81,17 +85,12 @@ static void	process_command_line(t_minishell *shell, char *line)
 	}
 	status = process_heredocs(ast, shell);
 	if (status < 0 || status == 130)
-	{
-		free_and_return(ast, &list);
-		return ;
-	}
+		return (free_and_return(ast, &list));
 	if (ast->type == NODE_COMMAND
 		&& (ast->args == NULL || ast->args[0] == NULL))
-	{
-		free_and_return(ast, &list);
-		return ;
-	}
-	(execute_command(shell, ast), free_and_return(ast, &list));
+		return (free_and_return(ast, &list));
+	shell->tokens = &list;
+	execute_command(shell, ast);
 }
 
 void	run_shell_loop(t_minishell *shell)
@@ -114,6 +113,8 @@ void	run_shell_loop(t_minishell *shell)
 		process_command_line(shell, line);
 		free(line);
 	}
+	if (!interactive)
+		get_next_line(0);
 	if (interactive)
 	{
 		clear_history();

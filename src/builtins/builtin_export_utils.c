@@ -6,7 +6,7 @@
 /*   By: enogueir <enogueir@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 19:59:13 by enogueir          #+#    #+#             */
-/*   Updated: 2025/06/12 21:18:25 by enogueir         ###   ########.fr       */
+/*   Updated: 2025/06/20 20:28:25 by enogueir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,12 +38,23 @@ int	export_update_existing(const char *arg, char *equal, size_t len,
 void	export_add_new(const char *arg, char *equal, size_t len,
 		t_minishell *sh)
 {
-	sh->envp[sh->env_count].key = ft_substr(arg, 0, len);
+	size_t	old_count;
+	t_envp	*new_envp;
+
+	old_count = sh->env_count;
+	new_envp = malloc(sizeof(t_envp) * (old_count + 1));
+	if (!new_envp)
+		return ;
+	if (old_count > 0)
+		ft_memcpy(new_envp, sh->envp, sizeof(t_envp) * old_count);
+	free(sh->envp);
+	new_envp[old_count].key = ft_substr(arg, 0, len);
 	if (equal)
-		sh->envp[sh->env_count].value = ft_strdup(equal + 1);
+		new_envp[old_count].value = ft_strdup(equal + 1);
 	else
-		sh->envp[sh->env_count].value = ft_strdup("");
-	sh->env_count++;
+		new_envp[old_count].value = ft_strdup("");
+	sh->envp = new_envp;
+	sh->env_count = old_count + 1;
 }
 
 void	export_one(const char *arg, t_minishell *sh)

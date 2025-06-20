@@ -6,7 +6,7 @@
 /*   By: enogueir <enogueir@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/08 19:31:21 by enogueir          #+#    #+#             */
-/*   Updated: 2025/06/16 19:05:05 by enogueir         ###   ########.fr       */
+/*   Updated: 2025/06/17 22:04:15 by enogueir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ int		builtin_env(t_envp *envp, size_t count);
 int		builtin_cd(char **argv, t_minishell *shell);
 
 /*builtin_exit.c*/
-int		builtin_exit(char **argv, t_minishell *shell);
+int		builtin_exit(t_ast_node *node, t_minishell *shell);
 
 /*builtin_export_utils.c*/
 int		export_update_existing(const char *arg, char *equal, size_t len,

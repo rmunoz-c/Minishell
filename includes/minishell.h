@@ -6,7 +6,7 @@
 /*   By: enogueir <enogueir@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/05 18:08:26 by rmunoz-c          #+#    #+#             */
-/*   Updated: 2025/06/16 22:34:06 by enogueir         ###   ########.fr       */
+/*   Updated: 2025/06/17 21:37:24 by enogueir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,7 @@ void							free_envp(t_envp *envp, size_t count);
 void							free_flat_env(char **env);
 int								is_line_empty(const char *s);
 void							free_ast(t_ast_node *ast);
-int								free_and_return(t_ast_node *ast,
+void							free_and_return(t_ast_node *ast,
 									t_token_list *list);
 void							free_all(t_minishell *data);
 

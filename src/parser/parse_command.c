@@ -6,7 +6,7 @@
 /*   By: enogueir <enogueir@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 18:23:11 by enogueir          #+#    #+#             */
-/*   Updated: 2025/06/12 21:49:10 by enogueir         ###   ########.fr       */
+/*   Updated: 2025/06/20 20:30:13 by enogueir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,10 +66,13 @@ t_ast_node	*parse_command(t_token_list *list, size_t start, size_t end)
 {
 	t_ast_node	*cmd;
 	size_t		arg_count;
+	char		**args;
 
 	arg_count = count_args(list, start, end);
-	cmd = ast_node_create(NODE_COMMAND,
-			malloc(sizeof(char *) * (arg_count + 1)));
+	args = malloc(sizeof(char *) * (arg_count + 1));
+	if (!args)
+		return (NULL);
+	cmd = ast_node_create(NODE_COMMAND, args);
 	if (!cmd || !cmd->args)
 		return (ast_node_free(cmd), NULL);
 	if (!fill_args_and_redirs(cmd, list, start, end))
